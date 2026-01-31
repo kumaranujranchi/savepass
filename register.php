@@ -72,8 +72,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - SecureVault</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="assets/js/crypto-helper.js"></script>
     <style>
         body {
             display: block;
@@ -87,7 +88,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="login-box">
             <h2>Create Account</h2>
             <p style="color: #ccc; margin-bottom: 2rem;">Setup your master password</p>
-            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+            <form id="regForm" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post"
+                onsubmit="return handleRegister(event)">
                 <div class="form-group <?php echo (!empty($email_err)) ? 'has-error' : ''; ?>">
                     <input type="email" name="email" placeholder="Email Address" value="<?php echo $email; ?>">
                     <span class="text-danger">
@@ -113,6 +115,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </form>
         </div>
     </div>
+
+    <script>
+        function handleRegister(e) {
+            const form = e.target;
+            const email = form.email.value;
+            const password = form.password.value;
+            const confirmPassword = form.confirm_password.value;
+
+            if (password !== confirmPassword) {
+                return true; // Let PHP handle validation error display for consistency
+            }
+
+            if (password.length < 6) {
+                return true;
+            }
+
+            // Client-side hashing: Never send the actual Master Password
+            const masterKey = CryptoHelper.deriveMasterKey(password, email);
+            const authHash = CryptoHelper.deriveAuthHash(masterKey);
+
+            // Replace values before submitting
+            form.password.value = authHash;
+            form.confirm_password.value = authHash;
+
+            return true;
+        }
+    </script>
 </body>
 
 </html>

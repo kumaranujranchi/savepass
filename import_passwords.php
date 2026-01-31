@@ -7,57 +7,23 @@ $user_id = $_SESSION["id"];
 $import_status = "";
 $import_count = 0;
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["csv_file"])) {
-    $file = $_FILES["csv_file"]["tmp_name"];
-
-    if (($handle = fopen($file, "r")) !== FALSE) {
-        $header = fgetcsv($handle, 1000, ",");
-
-        // Normalize header to lowercase
-        $header = array_map('strtolower', $header);
-
-        // Map headers to indices
-        $name_idx = array_search('name', $header);
-        $url_idx = array_search('url', $header);
-        $user_idx = array_search('username', $header);
-        $pass_idx = array_search('password', $header);
-
-        // If chrome export, headers might be 'name','url','username','password'
-        // If some headers not found, try common alternatives
-        if ($name_idx === false)
-            $name_idx = array_search('title', $header);
-        if ($url_idx === false)
-            $url_idx = array_search('website', $header);
-        if ($user_idx === false)
-            $user_idx = array_search('user', $header);
-        if ($pass_idx === false)
-            $pass_idx = array_search('pass', $header);
-
-        while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-            $app_name = ($name_idx !== false) ? $data[$name_idx] : "Imported Item";
-            $website_url = ($url_idx !== false) ? $data[$url_idx] : "";
-            $username = ($user_idx !== false) ? $data[$user_idx] : "";
-            $password_raw = ($pass_idx !== false) ? $data[$pass_idx] : "";
-
-            if (!empty($password_raw)) {
-                $password_enc = encryptData($password_raw);
-                $sql = "INSERT INTO vault_items (user_id, app_name, website_url, username, password_enc, category) 
-                        VALUES (:user_id, :app_name, :website_url, :username, :password_enc, 'Other')";
-                $stmt = $pdo->prepare($sql);
-                $stmt->execute([
-                    ':user_id' => $user_id,
-                    ':app_name' => $app_name,
-                    ':website_url' => $website_url,
-                    ':username' => $username,
-                    ':password_enc' => $password_enc
-                ]);
-                $import_count++;
-            }
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["encrypted_data"])) {
+    $data_list = json_decode($_POST["encrypted_data"], true);
+    if ($data_list) {
+        foreach ($data_list as $item) {
+            $sql = "INSERT INTO vault_items (user_id, app_name, website_url, username, password_enc, category) 
+                    VALUES (:user_id, :app_name, :website_url, :username, :password_enc, 'Other')";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                ':user_id' => $user_id,
+                ':app_name' => cleanInput($item['name']),
+                ':website_url' => cleanInput($item['url']),
+                ':username' => cleanInput($item['user']),
+                ':password_enc' => $item['pass'] // Already encrypted on client
+            ]);
+            $import_count++;
         }
-        fclose($handle);
         $import_status = "Successfully imported $import_count passwords!";
-    } else {
-        $import_status = "Error opening file.";
     }
 }
 
@@ -83,9 +49,10 @@ require_once "includes/header.php";
     <?php endif; ?>
 
     <div class="section-card" style="padding: 2.5rem; max-width: 600px;">
-        <form method="post" enctype="multipart/form-data">
+        <form id="importForm" method="post" onsubmit="return handleImport(event)">
+            <input type="hidden" name="encrypted_data" id="encrypted_data">
             <div style="border: 2px dashed var(--border-color); border-radius: 16px; padding: 3rem 2rem; text-align: center; margin-bottom: 2rem; background: rgba(255,255,255,0.02); transition: 0.3s;"
-                onmouseover="this.style.background='rgba(255,255,255,0.04)'"
+                id="dropZone" onmouseover="this.style.background='rgba(255,255,255,0.04)'"
                 onmouseout="this.style.background='rgba(255,255,255,0.02)'">
                 <i data-lucide="upload-cloud"
                     style="width: 48px; height: 48px; margin-bottom: 1.5rem; opacity: 0.5;"></i>
@@ -93,7 +60,7 @@ require_once "includes/header.php";
                 <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 2rem;">Only .csv files are
                     supported. Export from Chrome Settings > Passwords.</p>
 
-                <input type="file" name="csv_file" id="csv_file" accept=".csv" required style="display: none;"
+                <input type="file" id="csv_file" accept=".csv" required style="display: none;"
                     onchange="updateFileName(this)">
                 <label for="csv_file" class="btn-pro"
                     style="cursor: pointer; display: inline-flex; width: auto; padding: 12px 24px;">
@@ -104,9 +71,9 @@ require_once "includes/header.php";
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary"
+            <button type="submit" id="submitBtn" class="btn btn-primary"
                 style="width: 100%; padding: 1rem; font-weight: 800; font-size: 1rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(44, 15, 189, 0.3);">
-                Start Import
+                Start Global Encrypted Import
             </button>
         </form>
     </div>
@@ -143,6 +110,59 @@ require_once "includes/header.php";
     function updateFileName(input) {
         const fileName = input.files[0] ? input.files[0].name : '';
         document.getElementById('file-name').textContent = fileName ? 'Selected: ' + fileName : '';
+    }
+
+    async function handleImport(e) {
+        e.preventDefault();
+        const form = e.target;
+        const fileInput = document.getElementById('csv_file');
+        const key = CryptoHelper.getSessionKey();
+
+        if (!key) {
+            alert("Master Key missing. Log in again.");
+            return false;
+        }
+
+        if (!fileInput.files.length) return false;
+
+        const file = fileInput.files[0];
+        const text = await file.text();
+        const rows = text.split('\n').map(row => row.split(','));
+        const header = rows[0].map(h => h.toLowerCase().trim().replace(/"/g, ''));
+
+        // Basic CSV mapping
+        const nameIdx = header.indexOf('name') !== -1 ? header.indexOf('name') : header.indexOf('title');
+        const urlIdx = header.indexOf('url') !== -1 ? header.indexOf('url') : header.indexOf('website');
+        const userIdx = header.indexOf('username') !== -1 ? header.indexOf('username') : header.indexOf('user');
+        const passIdx = header.indexOf('password') !== -1 ? header.indexOf('password') : header.indexOf('pass');
+
+        const encryptedData = [];
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.innerText = "Encrypting locally...";
+        submitBtn.disabled = true;
+
+        for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            if (row.length < 2) continue;
+
+            const name = row[nameIdx] ? row[nameIdx].trim().replace(/"/g, '') : "Imported Item";
+            const url = row[urlIdx] ? row[urlIdx].trim().replace(/"/g, '') : "";
+            const user = row[userIdx] ? row[userIdx].trim().replace(/"/g, '') : "";
+            const pass = row[passIdx] ? row[passIdx].trim().replace(/"/g, '') : "";
+
+            if (pass) {
+                encryptedData.push({
+                    name: name,
+                    url: url,
+                    user: user,
+                    pass: CryptoHelper.encrypt(pass, key)
+                });
+            }
+        }
+
+        document.getElementById('encrypted_data').value = JSON.stringify(encryptedData);
+        submitBtn.innerText = "Saving to vault...";
+        form.submit();
     }
 </script>
 

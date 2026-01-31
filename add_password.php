@@ -19,9 +19,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($app_name) || empty($username) || empty($password_raw)) {
         $error = "App Name, Username and Password are required.";
     } else {
-        // Encrypt sensitive data
-        $password_enc = encryptData($password_raw);
-        $notes_enc = !empty($notes) ? encryptData($notes) : null;
+        // Zero-Knowledge: Data is ALREADY encrypted on the client side.
+        // We'll store it as is.
+        $password_enc = $password_raw;
+        $notes_enc = !empty($notes) ? $notes : null;
 
         $sql = "INSERT INTO vault_items (user_id, app_name, website_url, username, password_enc, category, notes_enc) VALUES (:user_id, :app_name, :url, :username, :password_enc, :category, :notes_enc)";
 
@@ -57,7 +58,8 @@ require_once "includes/header.php";
                 </div>
             <?php endif; ?>
 
-            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+            <form id="vaultForm" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post"
+                onsubmit="return handleVaultSubmit(event)">
                 <div class="form-group">
                     <label>App Name</label>
                     <input type="text" name="app_name" placeholder="e.g. Netflix" value="<?php echo $app_name; ?>"
@@ -125,6 +127,25 @@ require_once "includes/header.php";
             password += chars.charAt(Math.floor(Math.random() * chars.length));
         }
         document.getElementById("password_field").value = password;
+    }
+
+    function handleVaultSubmit(e) {
+        const form = e.target;
+        const key = CryptoHelper.getSessionKey();
+
+        if (!key) {
+            alert("Security Error: Master Key not found. Please log in again.");
+            window.location.href = 'login.php';
+            return false;
+        }
+
+        // Encrypt sensitive fields locally
+        form.password.value = CryptoHelper.encrypt(form.password.value, key);
+        if (form.notes.value) {
+            form.notes.value = CryptoHelper.encrypt(form.notes.value, key);
+        }
+
+        return true;
     }
 </script>
 

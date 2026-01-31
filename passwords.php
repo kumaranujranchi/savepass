@@ -57,7 +57,6 @@ require_once "includes/header.php";
             </thead>
             <tbody id="passwordList">
                 <?php foreach ($items as $item): ?>
-                    <?php $decrypted_password = decryptData($item['password_enc']); ?>
                     <tr class="password-card" data-category="<?php echo htmlspecialchars($item['category']); ?>">
                         <td>
                             <div class="service-cell">
@@ -90,7 +89,7 @@ require_once "includes/header.php";
                                     onclick="copyToClipboard('<?php echo htmlspecialchars($item['username']); ?>')"
                                     title="Copy Username"></i>
                                 <i data-lucide="key" class="icon-btn" style="width: 18px; height: 18px;"
-                                    onclick="copyToClipboard('<?php echo htmlspecialchars($decrypted_password); ?>')"
+                                    onclick="copyEncrypted('<?php echo $item['password_enc']; ?>')"
                                     title="Copy Password"></i>
                             </div>
                         </td>
@@ -108,13 +107,33 @@ require_once "includes/header.php";
 
 <script>
     function copyToClipboard(text) {
+        if (!text) return;
         navigator.clipboard.writeText(text).then(function () {
-            var x = document.getElementById("toast");
-            x.style.visibility = "visible";
-            setTimeout(function () { x.style.visibility = "hidden"; }, 3000);
-        }, function (err) {
-            console.error('Async: Could not copy text: ', err);
+            showToast("Copied to clipboard!");
         });
+    }
+
+    function copyEncrypted(ciphertext) {
+        const key = CryptoHelper.getSessionKey();
+        if (!key) {
+            showToast("Error: Master Key missing.");
+            return;
+        }
+
+        const plaintext = CryptoHelper.decrypt(ciphertext, key);
+        if (plaintext === "[Decryption Error]") {
+            showToast("Decryption failed. Check Master Password.");
+            return;
+        }
+
+        copyToClipboard(plaintext);
+    }
+
+    function showToast(msg) {
+        var x = document.getElementById("toast");
+        x.innerText = msg;
+        x.style.visibility = "visible";
+        setTimeout(function () { x.style.visibility = "hidden"; }, 3000);
     }
 
     function filterList() {

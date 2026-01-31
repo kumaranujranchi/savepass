@@ -73,8 +73,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - SecureVault</title>
     <link rel="icon" type="image/png" href="assets/images/favicon.png">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="assets/js/crypto-helper.js"></script>
     <style>
         body {
             display: block;
@@ -88,7 +89,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="login-box">
             <h2>Welcome Back</h2>
             <p style="color: #ccc; margin-bottom: 2rem;">Unlock your encrypted vault</p>
-            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post"
+                onsubmit="return handleLogin(event)">
                 <div class="form-group <?php echo (!empty($email_err)) ? 'has-error' : ''; ?>">
                     <input type="email" name="email" placeholder="Email Address" value="<?php echo $email; ?>">
                     <span class="text-danger">
@@ -112,6 +114,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </form>
         </div>
     </div>
+    <script>
+        function handleLogin(e) {
+            const form = e.target;
+            const email = form.email.value;
+            const password = form.password.value;
+
+            if (!email || !password) return true;
+
+            // Derive keys locally
+            const masterKey = CryptoHelper.deriveMasterKey(password, email);
+            const authHash = CryptoHelper.deriveAuthHash(masterKey);
+
+            // Store Master Key in session storage (only for this tab session)
+            CryptoHelper.setSessionKey(masterKey);
+
+            // Replace password with authHash before sending to server
+            form.password.value = authHash;
+
+            return true;
+        }
+    </script>
 </body>
 
 </html>

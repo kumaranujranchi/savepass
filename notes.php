@@ -10,8 +10,7 @@ $message = "";
 // Handle Save
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $title = cleanInput($_POST["title"]);
-    $content_raw = $_POST["content"];
-    $content_enc = encryptData($content_raw);
+    $content_enc = $_POST["content"]; // Already encrypted on client
 
     if (isset($_POST['note_id']) && !empty($_POST['note_id'])) {
         // Update
@@ -235,7 +234,8 @@ if (isset($_GET['id'])) {
     <div
         class="notes-content <?php echo ($current_note || (isset($_GET['id']) && $_GET['id'] == 'new')) ? 'mobile-show' : ''; ?>">
         <?php if ($current_note || (isset($_GET['id']) && $_GET['id'] == 'new')): ?>
-            <form method="post" action="notes.php" style="height: 100%; display: flex; flex-direction: column;">
+            <form id="noteForm" method="post" action="notes.php"
+                style="height: 100%; display: flex; flex-direction: column;" onsubmit="return handleNoteSubmit(event)">
                 <input type="hidden" name="note_id" value="<?php echo $current_note ? $current_note['id'] : ''; ?>">
                 <div class="editor-header">
                     <div style="display: flex; align-items: center; gap: 1rem;">
@@ -251,8 +251,9 @@ if (isset($_GET['id'])) {
                 <div class="editor-body">
                     <input type="text" name="title" class="note-input-title" placeholder="Note Title"
                         value="<?php echo $current_note ? htmlspecialchars($current_note['title']) : ''; ?>" required>
-                    <textarea name="content" class="note-input-content" placeholder="Start writing something amazing..."
-                        required><?php echo $current_note ? htmlspecialchars(decryptData($current_note['content_enc'])) : ''; ?></textarea>
+                    <textarea id="noteContent" name="content" class="note-input-content"
+                        placeholder="Start writing something amazing..."
+                        required><?php echo $current_note ? $current_note['content_enc'] : ''; ?></textarea>
                 </div>
             </form>
         <?php else: ?>
@@ -266,5 +267,36 @@ if (isset($_GET['id'])) {
         <?php endif; ?>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const textarea = document.getElementById('noteContent');
+        if (textarea && textarea.value) {
+            const key = CryptoHelper.getSessionKey();
+            if (key) {
+                const plaintext = CryptoHelper.decrypt(textarea.value, key);
+                if (plaintext !== "[Decryption Error]") {
+                    textarea.value = plaintext;
+                } else {
+                    textarea.value = "Error: Use modern master password to decrypt.";
+                    textarea.disabled = true;
+                }
+            }
+        }
+    });
+
+    function handleNoteSubmit(e) {
+        const form = e.target;
+        const key = CryptoHelper.getSessionKey();
+
+        if (!key) {
+            alert("Security Error: Master Key not found. Please log in again.");
+            return false;
+        }
+
+        form.content.value = CryptoHelper.encrypt(form.content.value, key);
+        return true;
+    }
+</script>
 
 <?php require_once "includes/footer.php"; ?>

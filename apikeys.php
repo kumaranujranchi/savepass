@@ -13,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_key'])) {
     $env = cleanInput($_POST["environment"]);
 
     if (!empty($service_name) && !empty($api_key_raw)) {
-        $api_key_enc = encryptData($api_key_raw);
+        $api_key_enc = $api_key_raw; // Already encrypted on client
         $sql = "INSERT INTO api_keys (user_id, service_name, api_key_enc, environment) VALUES (:user_id, :service_name, :api_key_enc, :env)";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([':user_id' => $user_id, ':service_name' => $service_name, ':api_key_enc' => $api_key_enc, ':env' => $env]);
@@ -41,7 +41,7 @@ require_once "includes/header.php";
             encryption.</p>
     </div>
 
-    <form method="post" action="">
+    <form id="keyForm" method="post" action="" onsubmit="return handleKeySubmit(event)">
         <div
             style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
             <div>
@@ -70,8 +70,8 @@ require_once "includes/header.php";
             <div style="position: relative;">
                 <input type="text" name="api_key" placeholder="Paste your secret key here" required
                     style="margin-bottom: 0; background: #1a1c26; border: 1px solid var(--border-color); border-radius: 12px; height: 52px; width: 100%; padding: 0 1.25rem; padding-left: 3.5rem;">
-                <span
-                    style="position: absolute; left: 1.25rem; top: 50%; transform: translateY(-50%); color: var(--text-dim); font-size: 1.2rem;">🔑</span>
+                <i data-lucide="key"
+                    style="position: absolute; left: 1.25rem; top: 50%; transform: translateY(-50%); color: var(--text-dim); width: 20px; height: 20px;"></i>
             </div>
         </div>
 
@@ -95,7 +95,6 @@ require_once "includes/header.php";
             </thead>
             <tbody>
                 <?php foreach ($keys as $key): ?>
-                    <?php $decrypted_key = decryptData($key['api_key_enc']); ?>
                     <tr>
                         <td>
                             <div class="service-cell">
@@ -138,8 +137,8 @@ require_once "includes/header.php";
                             <div class="key-mask" style="display: flex; align-items: center; gap: 8px;">
                                 <span class="masked"
                                     style="color: var(--text-dim); letter-spacing: 2px;">••••••••••••••••</span>
-                                <span class="revealed"
-                                    style="display: none; color: var(--text-secondary); font-family: monospace;"><?php echo htmlspecialchars($decrypted_key); ?></span>
+                                <span class="revealed" data-encrypted="<?php echo $key['api_key_enc']; ?>"
+                                    style="display: none; color: var(--text-secondary); font-family: monospace;">••••••••</span>
                             </div>
                         </td>
                         <td>
@@ -147,8 +146,7 @@ require_once "includes/header.php";
                                 <i data-lucide="eye" class="icon-btn" style="width: 18px; height: 18px;"
                                     onclick="toggleReveal(this)" title="Toggle Visibility"></i>
                                 <i data-lucide="copy" class="icon-btn" style="width: 18px; height: 18px;"
-                                    onclick="copyText('<?php echo htmlspecialchars($decrypted_key); ?>')"
-                                    title="Copy Key"></i>
+                                    onclick="copyKey('<?php echo $key['api_key_enc']; ?>')" title="Copy Key"></i>
                                 <i data-lucide="trash-2" class="icon-btn" style="width: 18px; height: 18px;"
                                     title="Delete"></i>
                             </div>
@@ -162,25 +160,52 @@ require_once "includes/header.php";
 
 <script>
     function toggleReveal(btn) {
-        var container = btn.previousElementSibling;
-        var masked = container.querySelector('.masked');
-        var revealed = container.querySelector('.revealed');
+        var row = btn.closest('tr');
+        var masked = row.querySelector('.masked');
+        var revealed = row.querySelector('.revealed');
 
         if (masked.style.display !== 'none') {
-            masked.style.display = 'none';
-            revealed.style.display = 'inline';
-            btn.innerText = 'Hide';
+            const encrypted = revealed.getAttribute('data-encrypted');
+            const key = CryptoHelper.getSessionKey();
+            if (key) {
+                const plaintext = CryptoHelper.decrypt(encrypted, key);
+                revealed.innerText = plaintext;
+                masked.style.display = 'none';
+                revealed.style.display = 'inline';
+            } else {
+                alert("Master Key not found. Please re-login.");
+            }
         } else {
             masked.style.display = 'inline';
             revealed.style.display = 'none';
-            btn.innerText = 'Show';
+            revealed.innerText = '••••••••';
         }
     }
 
-    function copyText(text) {
-        navigator.clipboard.writeText(text).then(function () {
-            alert("Copied!");
-        });
+    function copyKey(ciphertext) {
+        const key = CryptoHelper.getSessionKey();
+        if (!key) {
+            alert("Master Key not found.");
+            return;
+        }
+
+        const plaintext = CryptoHelper.decrypt(ciphertext, key);
+        if (plaintext !== "[Decryption Error]") {
+            navigator.clipboard.writeText(plaintext).then(() => alert("Copied!"));
+        } else {
+            alert("Decryption failed.");
+        }
+    }
+
+    function handleKeySubmit(e) {
+        const form = e.target;
+        const key = CryptoHelper.getSessionKey();
+        if (!key) {
+            alert("Security Error: Master Key missing.");
+            return false;
+        }
+        form.api_key.value = CryptoHelper.encrypt(form.api_key.value, key);
+        return true;
     }
 </script>
 

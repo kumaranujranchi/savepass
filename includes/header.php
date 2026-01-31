@@ -13,6 +13,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="assets/js/crypto-helper.js"></script>
 </head>
 
 <body>
@@ -45,7 +47,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
         </nav>
 
         <div class="sidebar-footer">
-            <a href="logout.php" class="nav-link" style="margin-bottom: 1rem;"><i data-lucide="log-out" style="width: 18px; height: 18px;"></i> Logout</a>
+            <a href="logout.php" class="nav-link" style="margin-bottom: 1rem;"><i data-lucide="log-out"
+                    style="width: 18px; height: 18px;"></i> Logout</a>
             <div class="btn-pro">
                 <i data-lucide="award" style="width: 18px; height: 18px;"></i> Upgrade to Pro
             </div>
@@ -61,8 +64,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <input type="text" class="search-bar" placeholder="Search passwords, notes or API keys (Cmd + K)">
             </div>
             <div class="header-actions">
-                <i data-lucide="bell" style="width: 20px; height: 20px; cursor: pointer; color: var(--text-secondary);"></i>
-                <i data-lucide="shield-check" style="width: 20px; height: 20px; cursor: pointer; color: var(--text-secondary);"></i>
+                <i data-lucide="bell"
+                    style="width: 20px; height: 20px; cursor: pointer; color: var(--text-secondary);"></i>
+                <i data-lucide="shield-check"
+                    style="width: 20px; height: 20px; cursor: pointer; color: var(--text-secondary);"></i>
                 <div class="profile-card">
                     <div class="profile-info">
                         <span class="profile-name"><?php echo htmlspecialchars($_SESSION['email'] ?? 'User'); ?></span>
