@@ -101,10 +101,10 @@ require_once "includes/header.php";
         <span class="section-title">Connected Devices</span>
     </div>
     <div style="padding: 1.5rem;">
-        <div
-            style="display: flex; align-items: center; gap: 1.25rem; padding: 1.25rem; background: #16161a; border-radius: 12px; border: 1px solid var(--border-color);">
+        <div <div
+            style="display: flex; align-items: center; gap: 1.25rem; padding: 1.25rem; background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-color);">
             <div
-                style="font-size: 1.5rem; width: 48px; height: 48px; background: #1e1e1e; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                style="font-size: 1.5rem; width: 48px; height: 48px; background: rgba(255,255,255,0.03); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
                 💻</div>
             <div style="flex: 1;">
                 <div style="font-weight: 700; color: var(--text-primary);">Current Session <span
