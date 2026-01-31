@@ -1,8 +1,5 @@
 -- Database Schema for SecureVault
 
-CREATE DATABASE IF NOT EXISTS securevault;
-USE securevault;
-
 -- Users Table
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
