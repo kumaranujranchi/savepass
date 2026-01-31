@@ -1,21 +1,21 @@
 <?php
-// Database credentials
+// Database credentials template
+// Rename this file to db.php and update with your local/server credentials
+
 define('DB_SERVER', 'localhost');
-define('DB_USERNAME', 'u743570205_savepass');
-define('DB_PASSWORD', 'Anuj@2026@2027');
-define('DB_NAME', 'u743570205_savepass');
+define('DB_USERNAME', 'your_username');
+define('DB_PASSWORD', 'your_password');
+define('DB_NAME', 'your_db_name');
 
 /* Attempt to connect to MySQL database */
 try {
     $pdo = new PDO("mysql:host=" . DB_SERVER . ";dbname=" . DB_NAME, DB_USERNAME, DB_PASSWORD);
-    // Set the PDO error mode to exception
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
     die("ERROR: Could not connect. " . $e->getMessage());
 }
 
-// Encryption Key (In production, stored in ENV variables)
-// This is a 32-byte key for AES-256
-define('ENCRYPTION_KEY', 'v3rYsEcUr3K3yF0rD3m0PurP0s3sOnLy!');
+// Encryption Key (This should be a unique 32-byte string)
+define('ENCRYPTION_KEY', 'CHANGE_ME_TO_A_SECURE_RANDOM_KEY');
 define('CIPHER_METHOD', 'AES-256-CBC');
 ?>
