@@ -30,48 +30,60 @@ $keys = $stmt->fetchAll(PDO::FETCH_ASSOC);
 require_once "includes/header.php";
 ?>
 
-<h1>API Key Manager</h1>
+<h1 class="page-title">API Key Manager</h1>
+<p class="page-subtitle">Securely store and manage your service API keys and secrets.</p>
 
-<!-- Simple Add Form -->
-<div class="card">
-    <h3>Add New API Key</h3>
+<!-- Premium Add Form -->
+<div class="dashboard-card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+        <span class="card-title">Add New API Key</span>
+    </div>
     <form method="post" action="">
-        <div style="display: flex; gap: 1rem;">
-            <input type="text" name="service_name" placeholder="Service Name (e.g. AWS)" required style="flex: 1;">
-            <select name="environment" style="flex: 1;">
-                <option value="Development">Development</option>
-                <option value="Staging">Staging</option>
-                <option value="Production">Production</option>
-            </select>
+        <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+            <div style="flex: 1;">
+                <label>Service Name</label>
+                <input type="text" name="service_name" placeholder="e.g. AWS, Stripe, Google Cloud" required
+                    style="margin-bottom: 0;">
+            </div>
+            <div style="flex: 1;">
+                <label>Environment</label>
+                <select name="environment" style="margin-bottom: 0;">
+                    <option value="Development">Development</option>
+                    <option value="Staging">Staging</option>
+                    <option value="Production">Production</option>
+                </select>
+            </div>
         </div>
-        <input type="text" name="api_key" placeholder="API Key Secret" required>
-        <button type="submit" name="add_key" class="btn btn-primary">Save Key</button>
+        <div style="margin-bottom: 1.5rem;">
+            <label>API Key Secret</label>
+            <input type="text" name="api_key" placeholder="Paste your API key here" required style="margin-bottom: 0;">
+        </div>
+        <button type="submit" name="add_key" class="btn btn-primary" style="width: auto; padding: 0.8rem 2rem;">Save
+            Key</button>
     </form>
 </div>
 
 <div class="key-list">
     <?php foreach ($keys as $key): ?>
         <?php $decrypted_key = decryptData($key['api_key_enc']); ?>
-        <div class="card" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem;">
+        <div class="dashboard-card" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
             <div>
-                <div style="font-weight: bold; font-size: 1.1rem;">
+                <div style="font-weight: 700; font-size: 1.1rem; color: var(--text-primary);">
                     <?php echo htmlspecialchars($key['service_name']); ?>
                 </div>
-                <div style="font-size: 0.8rem; color: #888; margin-top: 5px;">Environment: <span style="color: #ccc;">
-                        <?php echo htmlspecialchars($key['environment']); ?>
-                    </span></div>
-            </div>
-            <div style="display: flex; align-items: center; gap: 1rem;">
-                <div class="key-mask"
-                    style="font-family: monospace; background: #333; padding: 0.4rem; border-radius: 4px; font-size: 0.9rem;">
-                    <span class="masked">••••••••••••••••••••••••</span>
-                    <span class="revealed" style="display: none;">
-                        <?php echo htmlspecialchars($decrypted_key); ?>
-                    </span>
+                <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 4px; text-transform: uppercase; font-weight: 800;">
+                    Environment: <span style="color: var(--accent-secondary);"><?php echo htmlspecialchars($key['environment']); ?></span>
                 </div>
-                <button class="btn btn-cancel" onclick="toggleReveal(this)">Show</button>
-                <button class="btn btn-primary"
-                    onclick="copyText('<?php echo htmlspecialchars($decrypted_key); ?>')">Copy</button>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div class="key-mask" style="font-family: monospace; background: #1a1c26; padding: 10px 16px; border-radius: 8px; font-size: 0.9rem; border: 1px solid var(--border-color); color: var(--text-secondary);">
+                    <span class="masked">••••••••••••••••••••••••</span>
+                    <span class="revealed" style="display: none; color: var(--text-primary);"><?php echo htmlspecialchars($decrypted_key); ?></span>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-primary" style="width: auto; margin: 0; padding: 10px 16px;" onclick="toggleReveal(this)">Show</button>
+                    <button class="btn btn-cancel" style="width: auto; margin: 0; padding: 10px 16px;" onclick="copyText('<?php echo htmlspecialchars($decrypted_key); ?>')">Copy</button>
+                </div>
             </div>
         </div>
     <?php endforeach; ?>

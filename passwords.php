@@ -15,21 +15,25 @@ $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 require_once "includes/header.php";
 ?>
 
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-    <h1>Passwords</h1>
-    <a href="add_password.php"
-        style="background: #2c0fbd; color: white; padding: 0.6rem 1rem; border-radius: 6px; font-weight: bold; font-size: 0.9rem;">+
-        Add New</a>
-</div>
+<h1 class="page-title">Saved Passwords</h1>
+<p class="page-subtitle">Manage and access your encrypted credentials securely.</p>
 
-<input type="text" id="searchInput" onkeyup="filterList()" placeholder="Search passwords..." style="max-width: 400px;">
+<div
+    style="margin-bottom: 2rem; display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between;">
+    <div style="flex: 1; max-width: 400px; position: relative;">
+        <input type="text" id="searchInput" onkeyup="filterList()" placeholder="Search passwords..."
+            style="margin-bottom: 0; padding-left: 2.5rem; background: #1a1c26; border: 1px solid var(--border-color);">
+        <span
+            style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-dim);">🔍</span>
+    </div>
 
-<div class="filters">
-    <div class="filter-pill active" onclick="filterCategory('all')">All</div>
-    <div class="filter-pill" onclick="filterCategory('Work')">Work</div>
-    <div class="filter-pill" onclick="filterCategory('Personal')">Personal</div>
-    <div class="filter-pill" onclick="filterCategory('Finance')">Finance</div>
-    <div class="filter-pill" onclick="filterCategory('Social')">Social</div>
+    <div class="filters" style="margin-bottom: 0; padding-bottom: 0;">
+        <div class="filter-pill active" onclick="filterCategory('all')">All</div>
+        <div class="filter-pill" onclick="filterCategory('Work')">Work</div>
+        <div class="filter-pill" onclick="filterCategory('Personal')">Personal</div>
+        <div class="filter-pill" onclick="filterCategory('Finance')">Finance</div>
+        <div class="filter-pill" onclick="filterCategory('Social')">Social</div>
+    </div>
 </div>
 
 <div class="card-list" id="passwordList">
