@@ -412,6 +412,39 @@ a {
 }
 
 /* --- RESPONSIVE --- */
+/* --- COMPONENT: FILTER PILLS --- */
+.filters-container {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.filter-pill {
+  padding: 10px 20px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+}
+
+.filter-pill:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+}
+
+.filter-pill.active {
+  background: var(--accent-primary);
+  color: white;
+  border-color: var(--accent-primary);
+  box-shadow: 0 4px 15px rgba(44, 15, 189, 0.3);
+}
+
 @media (max-width: 1024px) {
   .sidebar { transform: translateX(-100%); transition: transform 0.3s; }
   .sidebar.mobile-open { transform: translateX(0); }

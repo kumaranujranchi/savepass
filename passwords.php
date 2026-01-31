@@ -27,12 +27,12 @@ require_once "includes/header.php";
                 style="position: absolute; left: 1.25rem; top: 50%; transform: translateY(-50%); color: var(--text-dim); font-size: 1.2rem;">🔍</span>
         </div>
 
-        <div style="display: flex; gap: 12px;">
+        <div style="display: flex; gap: 12px; align-items: center;">
             <a href="import_passwords.php" class="btn-pro"
                 style="padding: 12px 20px; font-size: 0.85rem; height: 52px; display: flex; align-items: center; border: 1px solid rgba(44, 15, 189, 0.3); background: rgba(44, 15, 189, 0.05);">
                 <span style="margin-right: 8px;">🔄</span> Sync Browser
             </a>
-            <div class="filters" style="margin: 0; padding: 0; display: flex; gap: 8px;">
+            <div class="filters-container">
                 <div class="filter-pill active" onclick="filterCategory('all')">All</div>
                 <div class="filter-pill" onclick="filterCategory('Work')">Work</div>
                 <div class="filter-pill" onclick="filterCategory('Personal')">Personal</div>
