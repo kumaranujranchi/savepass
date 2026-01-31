@@ -51,7 +51,7 @@ if (isset($_GET['id'])) {
     .notes-container {
         display: flex;
         height: calc(100vh - 180px);
-        background: #1e1e1e;
+        background: var(--bg-card);
         border: 1px solid var(--border-color);
         border-radius: 16px;
         overflow: hidden;
@@ -62,7 +62,8 @@ if (isset($_GET['id'])) {
         border-right: 1px solid var(--border-color);
         display: flex;
         flex-direction: column;
-        background: #16161a;
+        background: #0d0b1a;
+        /* Slightly darker than card for depth */
     }
 
     .notes-sidebar-header {
@@ -118,7 +119,7 @@ if (isset($_GET['id'])) {
 
     .notes-content {
         flex: 1;
-        background: #1e1e1e;
+        background: var(--bg-card);
         display: flex;
         flex-direction: column;
     }
@@ -140,7 +141,7 @@ if (isset($_GET['id'])) {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background: #1e1e1e;
+        background: var(--bg-card);
     }
 
     .editor-body {
