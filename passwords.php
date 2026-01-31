@@ -21,16 +21,24 @@ require_once "includes/header.php";
 <div class="section-card" style="margin-bottom: 2rem; padding: 1.5rem;">
     <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: center; justify-content: space-between;">
         <div style="flex: 1; min-width: 300px; position: relative;">
-            <input type="text" id="searchInput" onkeyup="filterList()" placeholder="Search passwords..." style="margin-bottom: 0; padding-left: 3.5rem; background: #1a1c26; border: 1px solid var(--border-color); border-radius: 12px; height: 52px; width: 100%;">
-            <span style="position: absolute; left: 1.25rem; top: 50%; transform: translateY(-50%); color: var(--text-dim); font-size: 1.2rem;">🔍</span>
+            <input type="text" id="searchInput" onkeyup="filterList()" placeholder="Search passwords..."
+                style="margin-bottom: 0; padding-left: 3.5rem; background: #1a1c26; border: 1px solid var(--border-color); border-radius: 12px; height: 52px; width: 100%;">
+            <span
+                style="position: absolute; left: 1.25rem; top: 50%; transform: translateY(-50%); color: var(--text-dim); font-size: 1.2rem;">🔍</span>
         </div>
-        
-        <div class="filters" style="margin: 0; padding: 0; display: flex; gap: 8px;">
-            <div class="filter-pill active" onclick="filterCategory('all')">All</div>
-            <div class="filter-pill" onclick="filterCategory('Work')">Work</div>
-            <div class="filter-pill" onclick="filterCategory('Personal')">Personal</div>
-            <div class="filter-pill" onclick="filterCategory('Finance')">Finance</div>
-            <div class="filter-pill" onclick="filterCategory('Social')">Social</div>
+
+        <div style="display: flex; gap: 12px;">
+            <a href="import_passwords.php" class="btn-pro"
+                style="padding: 12px 20px; font-size: 0.85rem; height: 52px; display: flex; align-items: center; border: 1px solid rgba(44, 15, 189, 0.3); background: rgba(44, 15, 189, 0.05);">
+                <span style="margin-right: 8px;">🔄</span> Sync Browser
+            </a>
+            <div class="filters" style="margin: 0; padding: 0; display: flex; gap: 8px;">
+                <div class="filter-pill active" onclick="filterCategory('all')">All</div>
+                <div class="filter-pill" onclick="filterCategory('Work')">Work</div>
+                <div class="filter-pill" onclick="filterCategory('Personal')">Personal</div>
+                <div class="filter-pill" onclick="filterCategory('Finance')">Finance</div>
+                <div class="filter-pill" onclick="filterCategory('Social')">Social</div>
+            </div>
         </div>
     </div>
 </div>
@@ -74,7 +82,8 @@ require_once "includes/header.php";
                             </span>
                         </td>
                         <td class="desktop-only" style="color: var(--text-dim);">
-                            <?php echo formatDate($item['created_at']); ?></td>
+                            <?php echo formatDate($item['created_at']); ?>
+                        </td>
                         <td>
                             <div style="display: flex; gap: 12px; color: var(--text-dim); font-size: 1.1rem;">
                                 <span class="icon-btn"

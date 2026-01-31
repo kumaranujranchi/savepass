@@ -43,6 +43,9 @@ require_once "includes/header.php";
         <div class="progress-bar">
             <div class="progress-fill" style="width: 65%; background: var(--accent-primary);"></div>
         </div>
+        <a href="import_passwords.php"
+            style="display: block; margin-top: 15px; font-size: 0.75rem; color: var(--accent-secondary); font-weight: 700;">+
+            Sync Browser Passwords</a>
     </div>
 
     <!-- API Keys -->
@@ -122,7 +125,8 @@ require_once "includes/header.php";
                                 </div>
                             </td>
                             <td style="color: var(--text-secondary);">
-                                <?php echo htmlspecialchars($item['username'] ?? 'user_name'); ?></td>
+                                <?php echo htmlspecialchars($item['username'] ?? 'user_name'); ?>
+                            </td>
                             <td>
                                 <span class="strength-pill strong">
                                     <span style="display: flex; gap: 2px;">
