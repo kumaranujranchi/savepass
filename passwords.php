@@ -18,54 +18,78 @@ require_once "includes/header.php";
 <h1 class="page-title">Saved Passwords</h1>
 <p class="page-subtitle">Manage and access your encrypted credentials securely.</p>
 
-<div
-    style="margin-bottom: 2rem; display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between;">
-    <div style="flex: 1; max-width: 400px; position: relative;">
-        <input type="text" id="searchInput" onkeyup="filterList()" placeholder="Search passwords..."
-            style="margin-bottom: 0; padding-left: 2.5rem; background: #1a1c26; border: 1px solid var(--border-color);">
-        <span
-            style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-dim);">🔍</span>
-    </div>
-
-    <div class="filters" style="margin-bottom: 0; padding-bottom: 0;">
-        <div class="filter-pill active" onclick="filterCategory('all')">All</div>
-        <div class="filter-pill" onclick="filterCategory('Work')">Work</div>
-        <div class="filter-pill" onclick="filterCategory('Personal')">Personal</div>
-        <div class="filter-pill" onclick="filterCategory('Finance')">Finance</div>
-        <div class="filter-pill" onclick="filterCategory('Social')">Social</div>
+<div class="section-card" style="margin-bottom: 2rem; padding: 1.5rem;">
+    <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: center; justify-content: space-between;">
+        <div style="flex: 1; min-width: 300px; position: relative;">
+            <input type="text" id="searchInput" onkeyup="filterList()" placeholder="Search passwords..." style="margin-bottom: 0; padding-left: 3.5rem; background: #1a1c26; border: 1px solid var(--border-color); border-radius: 12px; height: 52px; width: 100%;">
+            <span style="position: absolute; left: 1.25rem; top: 50%; transform: translateY(-50%); color: var(--text-dim); font-size: 1.2rem;">🔍</span>
+        </div>
+        
+        <div class="filters" style="margin: 0; padding: 0; display: flex; gap: 8px;">
+            <div class="filter-pill active" onclick="filterCategory('all')">All</div>
+            <div class="filter-pill" onclick="filterCategory('Work')">Work</div>
+            <div class="filter-pill" onclick="filterCategory('Personal')">Personal</div>
+            <div class="filter-pill" onclick="filterCategory('Finance')">Finance</div>
+            <div class="filter-pill" onclick="filterCategory('Social')">Social</div>
+        </div>
     </div>
 </div>
 
-<div class="card-list" id="passwordList">
-    <?php foreach ($items as $item): ?>
-        <?php
-        $decrypted_password = decryptData($item['password_enc']);
-        ?>
-        <div class="password-card" data-category="<?php echo htmlspecialchars($item['category']); ?>">
-            <div class="app-icon">
-                <?php echo strtoupper(substr($item['app_name'], 0, 1)); ?>
-            </div>
-            <div class="card-details">
-                <div class="app-name">
-                    <?php echo htmlspecialchars($item['app_name']); ?>
-                </div>
-                <div class="username">
-                    <?php echo htmlspecialchars($item['username']); ?>
-                </div>
-                <div class="password-row">
-                    <span class="dots">••••••••</span>
-                    <div class="action-icons">
-                        <span class="icon-btn"
-                            onclick="copyToClipboard('<?php echo htmlspecialchars($item['username']); ?>')"
-                            title="Copy Username">👤</span>
-                        <span class="icon-btn"
-                            onclick="copyToClipboard('<?php echo htmlspecialchars($decrypted_password); ?>')"
-                            title="Copy Password">🔑</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    <?php endforeach; ?>
+<div class="section-card">
+    <div style="overflow-x: auto;">
+        <table class="activity-table">
+            <thead>
+                <tr>
+                    <th>Service</th>
+                    <th>Username</th>
+                    <th>Strength</th>
+                    <th class="desktop-only">Created At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="passwordList">
+                <?php foreach ($items as $item): ?>
+                    <?php $decrypted_password = decryptData($item['password_enc']); ?>
+                    <tr class="password-card" data-category="<?php echo htmlspecialchars($item['category']); ?>">
+                        <td>
+                            <div class="service-cell">
+                                <div class="service-icon"><?php echo strtoupper(substr($item['app_name'], 0, 1)); ?></div>
+                                <div class="app-name"><?php echo htmlspecialchars($item['app_name']); ?></div>
+                            </div>
+                        </td>
+                        <td style="color: var(--text-secondary);"><?php echo htmlspecialchars($item['username']); ?></td>
+                        <td>
+                            <span class="strength-pill strong">
+                                <span style="display: flex; gap: 2px;">
+                                    <span
+                                        style="width: 4px; height: 10px; background: currentColor; border-radius: 1px;"></span>
+                                    <span
+                                        style="width: 4px; height: 10px; background: currentColor; border-radius: 1px;"></span>
+                                    <span
+                                        style="width: 4px; height: 10px; background: currentColor; border-radius: 1px;"></span>
+                                    <span
+                                        style="width: 4px; height: 10px; background: currentColor; border-radius: 1px; opacity: 0.3;"></span>
+                                </span>
+                                Strong
+                            </span>
+                        </td>
+                        <td class="desktop-only" style="color: var(--text-dim);">
+                            <?php echo formatDate($item['created_at']); ?></td>
+                        <td>
+                            <div style="display: flex; gap: 12px; color: var(--text-dim); font-size: 1.1rem;">
+                                <span class="icon-btn"
+                                    onclick="copyToClipboard('<?php echo htmlspecialchars($item['username']); ?>')"
+                                    title="Copy Username">👤</span>
+                                <span class="icon-btn"
+                                    onclick="copyToClipboard('<?php echo htmlspecialchars($decrypted_password); ?>')"
+                                    title="Copy Password">🔑</span>
+                            </div>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <!-- Simple Toast Notification -->
