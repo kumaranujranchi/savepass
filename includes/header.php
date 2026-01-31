@@ -17,11 +17,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <!-- Sidebar -->
     <aside class="sidebar desktop-only">
         <div class="brand">
-            <div class="brand-icon">🔒</div>
-            <div>
-                <div class="brand-name">SecureVault</div>
-                <div class="brand-tag">Privacy First</div>
-            </div>
+            <img src="assets/images/logo.png" alt="SecureVault Logo" class="brand-logo">
         </div>
 
         <nav class="sidebar-nav">
