@@ -75,45 +75,54 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script src="assets/js/crypto-helper.js"></script>
-    <style>
-        body {
-            display: block;
-        }
-    </style> <!-- Reset body flex for this layout if needed, though style.css handles it via class -->
-</head>
 
 <body class="login-body">
-    <div class="login-container">
-        <h1 class="login-title">SecureVault</h1>
-        <div class="login-box">
-            <h2>Create Account</h2>
-            <p style="color: #ccc; margin-bottom: 2rem;">Setup your master password</p>
-            <form id="regForm" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post"
-                onsubmit="return handleRegister(event)">
-                <div class="form-group <?php echo (!empty($email_err)) ? 'has-error' : ''; ?>">
-                    <input type="email" name="email" placeholder="Email Address" value="<?php echo $email; ?>">
-                    <span class="text-danger">
-                        <?php echo $email_err; ?>
-                    </span>
-                </div>
-                <div class="form-group <?php echo (!empty($password_err)) ? 'has-error' : ''; ?>">
-                    <input type="password" name="password" placeholder="Master Password">
-                    <span class="text-danger">
-                        <?php echo $password_err; ?>
-                    </span>
-                </div>
-                <div class="form-group <?php echo (!empty($confirm_password_err)) ? 'has-error' : ''; ?>">
-                    <input type="password" name="confirm_password" placeholder="Confirm Master Password">
-                    <span class="text-danger">
-                        <?php echo $confirm_password_err; ?>
-                    </span>
-                </div>
-                <div class="form-group">
-                    <input type="submit" class="btn btn-primary" style="width: 100%;" value="Sign Up">
-                </div>
-                <p>Already have an account? <a href="login.php" style="color: #2c0fbd;">Login here</a>.</p>
-            </form>
-        </div>
+    <div class="auth-card">
+        <div class="auth-logo">SecureVault</div>
+        <h2>Create Account</h2>
+        <p class="subtitle">Setup your master password</p>
+
+        <form id="regForm" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post"
+            onsubmit="return handleRegister(event)" class="auth-form">
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" name="email" placeholder="e.g. name@example.com" value="<?php echo $email; ?>"
+                    required>
+                <?php if (!empty($email_err)): ?>
+                    <span class="text-danger"
+                        style="font-size: 0.8rem; margin-top: 5px; display: block;"><?php echo $email_err; ?></span>
+                <?php endif; ?>
+            </div>
+
+            <div class="form-group">
+                <label>Master Password</label>
+                <input type="password" name="password" placeholder="Min. 6 characters" required>
+                <?php if (!empty($password_err)): ?>
+                    <span class="text-danger"
+                        style="font-size: 0.8rem; margin-top: 5px; display: block;"><?php echo $password_err; ?></span>
+                <?php endif; ?>
+            </div>
+
+            <div class="form-group">
+                <label>Confirm Password</label>
+                <input type="password" name="confirm_password" placeholder="Re-enter password" required>
+                <?php if (!empty($confirm_password_err)): ?>
+                    <span class="text-danger"
+                        style="font-size: 0.8rem; margin-top: 5px; display: block;"><?php echo $confirm_password_err; ?></span>
+                <?php endif; ?>
+            </div>
+
+            <button type="submit" class="btn-auth">Sign Up</button>
+
+            <div class="auth-footer">
+                Already have an account? <a href="login.php">Login here</a>
+            </div>
+
+            <p class="auth-note">
+                <strong>Important:</strong> Your Master Password is your ONLY key.
+                We cannot reset it for you. Please store it safely.
+            </p>
+        </form>
     </div>
 
     <script>

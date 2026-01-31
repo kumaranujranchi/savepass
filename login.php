@@ -76,43 +76,45 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script src="assets/js/crypto-helper.js"></script>
-    <style>
-        body {
-            display: block;
-        }
-    </style>
-</head>
 
 <body class="login-body">
-    <div class="login-container">
-        <h1 class="login-title">SecureVault</h1>
-        <div class="login-box">
-            <h2>Welcome Back</h2>
-            <p style="color: #ccc; margin-bottom: 2rem;">Unlock your encrypted vault</p>
-            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post"
-                onsubmit="return handleLogin(event)">
-                <div class="form-group <?php echo (!empty($email_err)) ? 'has-error' : ''; ?>">
-                    <input type="email" name="email" placeholder="Email Address" value="<?php echo $email; ?>">
-                    <span class="text-danger">
-                        <?php echo $email_err; ?>
-                    </span>
-                </div>
-                <div class="form-group <?php echo (!empty($password_err)) ? 'has-error' : ''; ?>">
-                    <input type="password" name="password" placeholder="Master Password">
-                    <span class="text-danger">
-                        <?php echo $password_err; ?>
-                    </span>
-                </div>
-                <div class="form-group">
-                    <input type="submit" class="btn btn-primary" style="width: 100%;" value="Unlock Vault">
-                </div>
-                <div style="margin-top: 1rem; font-size: 0.9rem;">
-                    <a href="register.php" style="color: #2c0fbd;">Create New Account</a>
-                </div>
-                <p style="margin-top: 2rem; font-size: 0.8rem; color: #666;">Security Note: Your Master Password is
-                    unrecoverable. If lost, your data remains encrypted and inaccessible.</p>
-            </form>
-        </div>
+    <div class="auth-card">
+        <div class="auth-logo">SecureVault</div>
+        <h2>Welcome Back</h2>
+        <p class="subtitle">Unlock your encrypted vault</p>
+
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post"
+            onsubmit="return handleLogin(event)" class="auth-form">
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" name="email" placeholder="e.g. name@example.com" value="<?php echo $email; ?>"
+                    required>
+                <?php if (!empty($email_err)): ?>
+                    <span class="text-danger"
+                        style="font-size: 0.8rem; margin-top: 5px; display: block;"><?php echo $email_err; ?></span>
+                <?php endif; ?>
+            </div>
+
+            <div class="form-group">
+                <label>Master Password</label>
+                <input type="password" name="password" placeholder="••••••••••••" required>
+                <?php if (!empty($password_err)): ?>
+                    <span class="text-danger"
+                        style="font-size: 0.8rem; margin-top: 5px; display: block;"><?php echo $password_err; ?></span>
+                <?php endif; ?>
+            </div>
+
+            <button type="submit" class="btn-auth">Unlock Vault</button>
+
+            <div class="auth-footer">
+                Don't have an account? <a href="register.php">Create New Account</a>
+            </div>
+
+            <p class="auth-note">
+                <strong>Security Note:</strong> Your Master Password is unrecoverable.
+                If lost, your data remains encrypted and inaccessible.
+            </p>
+        </form>
     </div>
     <script>
         function handleLogin(e) {
