@@ -48,7 +48,11 @@ require_once "includes/header.php";
     <div
         style="padding: 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
         <div>
-            <div style="font-weight: 700; margin-bottom: 4px; color: var(--text-primary);">Two-Factor Authentication
+            <div class="card-header">
+                <h3 style="margin: 0; font-size: 1.1rem; display: flex; align-items: center; gap: 10px;">
+                    <i data-lucide="shield-check" style="width: 20px; height: 20px; color: var(--accent-primary);"></i>
+                    Two-Factor Authentication
+                </h3>
             </div>
             <div style="font-size: 0.8rem; color: var(--text-dim);">Add an extra layer of security to your account.
             </div>

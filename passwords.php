@@ -23,14 +23,14 @@ require_once "includes/header.php";
         <div style="flex: 1; min-width: 300px; position: relative;">
             <input type="text" id="searchInput" onkeyup="filterList()" placeholder="Search passwords..."
                 style="margin-bottom: 0; padding-left: 3.5rem; background: #1a1c26; border: 1px solid var(--border-color); border-radius: 12px; height: 52px; width: 100%;">
-            <span
-                style="position: absolute; left: 1.25rem; top: 50%; transform: translateY(-50%); color: var(--text-dim); font-size: 1.2rem;">🔍</span>
+            <i data-lucide="search"
+                style="position: absolute; left: 1.25rem; top: 50%; transform: translateY(-50%); color: var(--text-dim); width: 20px; height: 20px;"></i>
         </div>
 
         <div style="display: flex; gap: 12px; align-items: center;">
             <a href="import_passwords.php" class="btn-pro"
                 style="padding: 12px 20px; font-size: 0.85rem; height: 52px; display: flex; align-items: center; border: 1px solid rgba(44, 15, 189, 0.3); background: rgba(44, 15, 189, 0.05);">
-                <span style="margin-right: 8px;">🔄</span> Sync Browser
+                <i data-lucide="refresh-cw" style="width: 16px; height: 16px; margin-right: 8px;"></i> Sync Browser
             </a>
             <div class="filters-container">
                 <div class="filter-pill active" onclick="filterCategory('all')">All</div>
@@ -85,13 +85,13 @@ require_once "includes/header.php";
                             <?php echo formatDate($item['created_at']); ?>
                         </td>
                         <td>
-                            <div style="display: flex; gap: 12px; color: var(--text-dim); font-size: 1.1rem;">
-                                <span class="icon-btn"
+                            <div style="display: flex; gap: 12px; color: var(--text-dim);">
+                                <i data-lucide="user" class="icon-btn" style="width: 18px; height: 18px;"
                                     onclick="copyToClipboard('<?php echo htmlspecialchars($item['username']); ?>')"
-                                    title="Copy Username">👤</span>
-                                <span class="icon-btn"
+                                    title="Copy Username"></i>
+                                <i data-lucide="key" class="icon-btn" style="width: 18px; height: 18px;"
                                     onclick="copyToClipboard('<?php echo htmlspecialchars($decrypted_password); ?>')"
-                                    title="Copy Password">🔑</span>
+                                    title="Copy Password"></i>
                             </div>
                         </td>
                     </tr>

@@ -34,7 +34,7 @@ require_once "includes/header.php";
     <div class="dashboard-card">
         <div class="card-header">
             <span class="card-title">Total Passwords</span>
-            <span style="color: var(--text-dim);">•••</span>
+            <i data-lucide="key-round" style="width: 18px; height: 18px; color: var(--text-dim);"></i>
         </div>
         <div class="card-body">
             <span class="card-value"><?php echo $password_count; ?></span>
@@ -52,7 +52,7 @@ require_once "includes/header.php";
     <div class="dashboard-card">
         <div class="card-header">
             <span class="card-title">API Keys</span>
-            <span style="color: var(--text-dim);">🛡️</span>
+            <i data-lucide="terminal" style="width: 18px; height: 18px; color: var(--text-dim);"></i>
         </div>
         <div class="card-body">
             <span class="card-value"><?php echo $apikey_count; ?></span>
@@ -67,7 +67,7 @@ require_once "includes/header.php";
     <div class="dashboard-card">
         <div class="card-header">
             <span class="card-title">Secure Notes</span>
-            <span style="color: var(--text-dim);">📝</span>
+            <i data-lucide="file-text" style="width: 18px; height: 18px; color: var(--text-dim);"></i>
         </div>
         <div class="card-body">
             <span class="card-value"><?php echo $note_count; ?></span>
@@ -82,7 +82,7 @@ require_once "includes/header.php";
     <div class="dashboard-card">
         <div class="card-header">
             <span class="card-title">Last Accessed</span>
-            <span style="color: var(--text-dim);">🕒</span>
+            <i data-lucide="clock" style="width: 18px; height: 18px; color: var(--text-dim);"></i>
         </div>
         <div>
             <div style="font-weight: 800; font-size: 1.1rem; margin-bottom: 4px;">
@@ -144,9 +144,10 @@ require_once "includes/header.php";
                             </td>
                             <td style="color: var(--text-dim);"><?php echo formatDate($item['created_at']); ?></td>
                             <td>
-                                <div style="display: flex; gap: 12px; color: var(--text-dim); font-size: 1.1rem;">
-                                    <span style="cursor: pointer;">📋</span>
-                                    <span style="cursor: pointer;">👁️</span>
+                                <div style="display: flex; gap: 12px; color: var(--text-dim);">
+                                    <i data-lucide="copy" class="icon-btn" style="width: 18px; height: 18px;" title="Copy"></i>
+                                    <i data-lucide="external-link" class="icon-btn" style="width: 18px; height: 18px;"
+                                        title="Open"></i>
                                 </div>
                             </td>
                         </tr>

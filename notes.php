@@ -214,11 +214,10 @@ if (isset($_GET['id'])) {
 <div class="notes-container">
     <div class="notes-sidebar">
         <div class="notes-sidebar-header">
-            <span
-                style="font-weight: 800; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; color: var(--text-dim);">My
-                Notes</span>
-            <a href="notes.php?id=new" class="btn-pro"
-                style="padding: 6px 12px; font-size: 0.75rem; text-decoration: none;">+ New Note</a>
+            <h3 style="margin: 0; font-size: 1.1rem; font-weight: 800;">My Notes</h3>
+            <i data-lucide="plus-circle"
+                style="cursor: pointer; color: var(--accent-primary); width: 22px; height: 22px;"
+                onclick="window.location.href='notes.php?id=new'"></i>
         </div>
         <div class="notes-list">
             <?php foreach ($notes_list as $note): ?>
@@ -258,9 +257,9 @@ if (isset($_GET['id'])) {
             </form>
         <?php else: ?>
             <div class="notes-placeholder">
-                <div style="font-size: 4rem; margin-bottom: 1.5rem; opacity: 0.5;">📝</div>
-                <h2 style="color: var(--text-primary); margin-bottom: 10px;">Select a note to view</h2>
-                <p>Choose a note from the list on the left or create a new one to get started.</p>
+                <i data-lucide="file-text" style="width: 48px; height: 48px; opacity: 0.2; margin-bottom: 1.5rem;"></i>
+                <h3 style="margin-bottom: 8px;">Select a note to view</h3>
+                <p style="font-size: 0.9rem; color: var(--text-dim);">Or create a new one to keep it secure.</p>
                 <a href="notes.php?id=new" class="btn btn-primary"
                     style="margin-top: 1.5rem; width: auto; padding: 0.75rem 2.5rem;">Create New Note</a>
             </div>

@@ -72,7 +72,7 @@ require_once "includes/header.php";
         <div class="section-card"
             style="background: rgba(44, 15, 189, 0.1); border: 1px solid var(--accent-primary); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;">
             <div style="display: flex; align-items: center; gap: 1rem;">
-                <span style="font-size: 1.5rem;">✅</span>
+                <i data-lucide="check-circle" style="width: 24px; height: 24px; color: #4caf50;"></i>
                 <span style="font-weight: 700; color: white;">
                     <?php echo $import_status; ?>
                 </span>
@@ -87,7 +87,8 @@ require_once "includes/header.php";
             <div style="border: 2px dashed var(--border-color); border-radius: 16px; padding: 3rem 2rem; text-align: center; margin-bottom: 2rem; background: rgba(255,255,255,0.02); transition: 0.3s;"
                 onmouseover="this.style.background='rgba(255,255,255,0.04)'"
                 onmouseout="this.style.background='rgba(255,255,255,0.02)'">
-                <div style="font-size: 3rem; margin-bottom: 1.5rem; opacity: 0.5;">📁</div>
+                <i data-lucide="upload-cloud"
+                    style="width: 48px; height: 48px; margin-bottom: 1.5rem; opacity: 0.5;"></i>
                 <h3 style="margin-bottom: 10px;">Select CSV File</h3>
                 <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 2rem;">Only .csv files are
                     supported. Export from Chrome Settings > Passwords.</p>
@@ -112,7 +113,8 @@ require_once "includes/header.php";
 
     <div class="section-card" style="margin-top: 3rem; padding: 2rem;">
         <h3 style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;">
-            <span style="font-size: 1.2rem;">💡</span> Help: How to export?
+            <i data-lucide="info" style="width: 20px; height: 20px; color: var(--accent-secondary);"></i> Help: How to
+            export?
         </h3>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
             <div>

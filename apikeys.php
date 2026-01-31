@@ -99,40 +99,58 @@ require_once "includes/header.php";
                     <tr>
                         <td>
                             <div class="service-cell">
-                                <div class="service-icon"><?php echo strtoupper(substr($key['service_name'], 0, 1)); ?></div>
+                                <div class="service-icon"><?php echo strtoupper(substr($key['service_name'], 0, 1)); ?>
+                                </div>
                                 <div class="app-name"><?php echo htmlspecialchars($key['service_name']); ?></div>
                             </div>
                         </td>
                         <td>
-                            <?php 
+                            <?php
                             $env_class = 'strong'; // default
                             $envv = strtolower($key['environment']);
-                            if($envv == 'development') $env_class = 'strong'; // Purple/Primary
-                            if($envv == 'staging') $env_class = 'strong'; // Green
-                            if($envv == 'production') $env_class = 'strong'; // Warning/Red
+                            if ($envv == 'development')
+                                $env_class = 'strong'; // Purple/Primary
+                            if ($envv == 'staging')
+                                $env_class = 'strong'; // Green
+                            if ($envv == 'production')
+                                $env_class = 'strong'; // Warning/Red
                             ?>
-                            <span class="strength-pill <?php echo $env_class; ?>" style="background: <?php 
-                                if($envv == 'development') echo 'rgba(44, 15, 189, 0.15)';
-                                elseif($envv == 'staging') echo 'rgba(0, 184, 148, 0.15)';
-                                elseif($envv == 'production') echo 'rgba(255, 159, 67, 0.15)';
-                            ?>; color: <?php 
-                                if($envv == 'development') echo 'var(--accent-primary)';
-                                elseif($envv == 'staging') echo 'var(--green-sec)';
-                                elseif($envv == 'production') echo '#ff9f43';
-                            ?>; border: none; font-weight: 800; text-transform: uppercase; font-size: 0.7rem; padding: 4px 10px;">
+                            <span class="strength-pill <?php echo $env_class; ?>"
+                                style="background: <?php
+                                if ($envv == 'development')
+                                    echo 'rgba(44, 15, 189, 0.15)';
+                                elseif ($envv == 'staging')
+                                    echo 'rgba(0, 184, 148, 0.15)';
+                                elseif ($envv == 'production')
+                                    echo 'rgba(255, 159, 67, 0.15)';
+                                ?>; color: <?php
+                                if ($envv == 'development')
+                                    echo 'var(--accent-primary)';
+                                elseif ($envv == 'staging')
+                                    echo 'var(--green-sec)';
+                                elseif ($envv == 'production')
+                                    echo '#ff9f43';
+                                ?>; border: none; font-weight: 800; text-transform: uppercase; font-size: 0.7rem; padding: 4px 10px;">
                                 <?php echo htmlspecialchars($key['environment']); ?>
                             </span>
                         </td>
                         <td>
                             <div class="key-mask" style="display: flex; align-items: center; gap: 8px;">
-                                <span class="masked" style="color: var(--text-dim); letter-spacing: 2px;">••••••••••••••••</span>
-                                <span class="revealed" style="display: none; color: var(--text-secondary); font-family: monospace;"><?php echo htmlspecialchars($decrypted_key); ?></span>
+                                <span class="masked"
+                                    style="color: var(--text-dim); letter-spacing: 2px;">••••••••••••••••</span>
+                                <span class="revealed"
+                                    style="display: none; color: var(--text-secondary); font-family: monospace;"><?php echo htmlspecialchars($decrypted_key); ?></span>
                             </div>
                         </td>
                         <td>
-                            <div style="display: flex; gap: 12px; color: var(--text-dim); font-size: 1.1rem;">
-                                <span class="icon-btn" onclick="toggleReveal(this)" title="Toggle Visibility">👁️</span>
-                                <span class="icon-btn" onclick="copyText('<?php echo htmlspecialchars($decrypted_key); ?>')" title="Copy Key">📋</span>
+                            <div style="display: flex; gap: 12px; color: var(--text-dim);">
+                                <i data-lucide="eye" class="icon-btn" style="width: 18px; height: 18px;"
+                                    onclick="toggleReveal(this)" title="Toggle Visibility"></i>
+                                <i data-lucide="copy" class="icon-btn" style="width: 18px; height: 18px;"
+                                    onclick="copyText('<?php echo htmlspecialchars($decrypted_key); ?>')"
+                                    title="Copy Key"></i>
+                                <i data-lucide="trash-2" class="icon-btn" style="width: 18px; height: 18px;"
+                                    title="Delete"></i>
                             </div>
                         </td>
                     </tr>
