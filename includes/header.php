@@ -14,7 +14,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 </head>
 
 <body>
-    <div class="sidebar">
+    <div class="sidebar desktop-only">
         <h2>SecureVault</h2>
         <p style="font-size: 0.8rem; color: #888; margin-top: -10px; margin-bottom: 2rem;">Privacy First</p>
         <nav>
@@ -44,4 +44,26 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <a href="logout.php" style="color: #888; font-size: 0.9rem;">Logout</a>
         </div>
     </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="bottom-nav mobile-only">
+        <a href="dashboard.php"
+            class="bottom-nav-item <?php echo ($current_page == 'dashboard.php') ? 'active' : ''; ?>">
+            <div class="bottom-nav-icon">🏠</div>
+            <span>Home</span>
+        </a>
+        <a href="passwords.php"
+            class="bottom-nav-item <?php echo ($current_page == 'passwords.php' || $current_page == 'add_password.php') ? 'active' : ''; ?>">
+            <div class="bottom-nav-icon">🔑</div>
+            <span>Vault</span>
+        </a>
+        <a href="notes.php" class="bottom-nav-item <?php echo ($current_page == 'notes.php') ? 'active' : ''; ?>">
+            <div class="bottom-nav-icon">📝</div>
+            <span>Notes</span>
+        </a>
+        <a href="settings.php" class="bottom-nav-item <?php echo ($current_page == 'settings.php') ? 'active' : ''; ?>">
+            <div class="bottom-nav-icon">⚙️</div>
+            <span>Settings</span>
+        </a>
+    </nav>
     <div class="main-content">

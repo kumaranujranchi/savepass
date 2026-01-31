@@ -47,45 +47,70 @@ if (isset($_GET['id'])) {
 <?php require_once "includes/header.php"; ?>
 
 <style>
-    /* Override default layout for this page to match 2-column design */
+    /* Responsive Notes Layout */
     .notes-container {
         display: flex;
-        height: calc(100vh - 100px);
-        border: 1px solid #333;
-        border-radius: 8px;
+        height: calc(100vh - 120px);
+        border: 1px solid var(--border);
+        border-radius: 12px;
         overflow: hidden;
+        background: var(--bg-card);
     }
 
     .notes-list {
-        width: 300px;
+        width: 100%;
+        /* Default mobile: full width */
         background: #181818;
-        border-right: 1px solid #333;
+        border-right: 1px solid var(--border);
         overflow-y: auto;
+        display:
+            <?php echo $current_note ? 'none' : 'block'; ?>
+        ;
+        /* Hide list if note selected on mobile */
     }
 
     .notes-editor {
         flex: 1;
-        background: #121212;
-        display: flex;
+        background: var(--bg-dark);
+        display:
+            <?php echo $current_note ? 'flex' : 'none'; ?>
+        ;
+        /* Show editor if note selected on mobile */
         flex-direction: column;
     }
 
+    /* Desktop Transitions */
+    @media (min-width: 1024px) {
+        .notes-list {
+            width: 300px;
+            display: block !important;
+        }
+
+        .notes-editor {
+            display: flex !important;
+        }
+
+        .mobile-back-btn {
+            display: none !important;
+        }
+    }
+
     .note-item {
-        padding: 1rem;
-        border-bottom: 1px solid #333;
+        padding: 1.2rem;
+        border-bottom: 1px solid var(--border);
         display: block;
         transition: background 0.2s;
     }
 
     .note-item:hover,
     .note-item.active {
-        background: #222;
+        background: #252525;
     }
 
     .note-preview {
-        font-size: 0.8rem;
-        color: #888;
-        margin-top: 0.3rem;
+        font-size: 0.75rem;
+        color: var(--text-gray);
+        margin-top: 0.4rem;
     }
 
     textarea.editor-textarea {
@@ -93,34 +118,50 @@ if (isset($_GET['id'])) {
         width: 100%;
         border: none;
         background: transparent;
-        color: #ccc;
+        color: var(--text-light);
         resize: none;
-        padding: 2rem;
-        font-family: monospace;
+        padding: 1.5rem;
+        font-family: inherit;
         font-size: 1rem;
         outline: none;
+        line-height: 1.6;
+    }
+
+    .editor-header {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
     }
 
     input.editor-title {
-        width: 100%;
+        flex: 1;
         border: none;
         background: transparent;
         color: white;
-        font-size: 1.5rem;
-        padding: 2rem 2rem 0;
+        font-size: 1.2rem;
+        padding: 0.5rem;
         outline: none;
         font-weight: bold;
+    }
+
+    .mobile-back-btn {
+        padding: 0.5rem;
+        margin-right: 0.5rem;
+        cursor: pointer;
+        font-size: 1.2rem;
     }
 </style>
 
 <div class="notes-container">
     <div class="notes-list">
-        <a href="notes.php" class="note-item" style="text-align: center; color: #2c0fbd; font-weight: bold;">+ New
-            Note</a>
+        <div style="padding: 1rem; border-bottom: 1px solid var(--border);">
+            <a href="notes.php?id=new" class="btn btn-primary" style="margin: 0;">+ New Note</a>
+        </div>
         <?php foreach ($notes_list as $note): ?>
             <a href="notes.php?id=<?php echo $note['id']; ?>"
                 class="note-item <?php echo ($current_note && $current_note['id'] == $note['id']) ? 'active' : ''; ?>">
-                <div style="font-weight: bold;">
+                <div style="font-weight: 600;">
                     <?php echo htmlspecialchars($note['title']); ?>
                 </div>
                 <div class="note-preview">
@@ -130,18 +171,32 @@ if (isset($_GET['id'])) {
         <?php endforeach; ?>
     </div>
 
-    <div class="notes-editor">
-        <form method="post" style="display: flex; flex-direction: column; height: 100%;">
-            <input type="hidden" name="note_id" value="<?php echo $current_note ? $current_note['id'] : ''; ?>">
-            <div style="display: flex; justify-content: space-between; align-items: center; padding-right: 2rem;">
-                <input type="text" name="title" class="editor-title" placeholder="Note Title"
-                    value="<?php echo $current_note ? htmlspecialchars($current_note['title']) : ''; ?>" required>
-                <button type="submit" class="btn btn-primary">Save</button>
+    <?php if ($current_note || (isset($_GET['id']) && $_GET['id'] == 'new')): ?>
+        <div class="notes-editor">
+            <form method="post" style="display: flex; flex-direction: column; height: 100%;">
+                <input type="hidden" name="note_id" value="<?php echo $current_note ? $current_note['id'] : ''; ?>">
+
+                <div class="editor-header">
+                    <a href="notes.php" class="mobile-back-btn mobile-only">←</a>
+                    <input type="text" name="title" class="editor-title" placeholder="Note Title"
+                        value="<?php echo $current_note ? htmlspecialchars($current_note['title']) : ''; ?>" required>
+                    <button type="submit" class="btn btn-primary"
+                        style="width: auto; margin: 0; padding: 0.6rem 1.2rem;">Save</button>
+                </div>
+
+                <textarea name="content" class="editor-textarea"
+                    placeholder="Start typing your secure note..."><?php echo $current_note ? htmlspecialchars(decryptData($current_note['content_enc'])) : ''; ?></textarea>
+            </form>
+        </div>
+    <?php else: ?>
+        <div class="notes-editor desktop-only"
+            style="justify-content: center; align-items: center; color: var(--text-gray);">
+            <div style="text-align: center;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">📝</div>
+                <p>Select a note to view or create a new one</p>
             </div>
-            <textarea name="content" class="editor-textarea"
-                placeholder="Start typing your secure note..."><?php echo $current_note ? htmlspecialchars(decryptData($current_note['content_enc'])) : ''; ?></textarea>
-        </form>
-    </div>
+        </div>
+    <?php endif; ?>
 </div>
 
 <?php require_once "includes/footer.php"; ?>
