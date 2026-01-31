@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Settings Overview</title>
+    <style>
+        body { font-family: Inter, sans-serif; background-color: #121212; color: #ffffff; margin: 0; display: flex; justify-content: center; min-height: 100vh; padding: 1rem; box-sizing: border-box; }
+        .container { width: 100%; max-width: 600px; padding-top: 2rem; }
+        h1 { font-size: 1.5rem; margin-bottom: 2rem; }
+        .section-title { font-size: 0.9rem; color: #888; margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; font-weight: bold; }
+        .card { background: #1e1e1e; border-radius: 12px; margin-bottom: 2rem; overflow: hidden; }
+        .card-row { padding: 1rem 1.5rem; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
+        .card-row:last-child { border-bottom: none; }
+        .row-label { font-size: 1rem; }
+        .row-value { color: #888; font-size: 0.9rem; display: flex; align-items: center; }
+        .toggle-switch { width: 44px; height: 24px; background: #333; border-radius: 12px; position: relative; cursor: pointer; }
+        .toggle-switch.active { background: #4caf50; }
+        .toggle-switch .knob { width: 20px; height: 20px; background: white; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: 0.3s; }
+        .toggle-switch.active .knob { left: 22px; }
+        .btn-simple { color: #2c0fbd; text-decoration: none; font-weight: bold; font-size: 0.9rem; cursor: pointer; }
+        .device-item { padding: 1rem 1.5rem; border-bottom: 1px solid #333; display: flex; align-items: center; }
+        .device-icon { width: 32px; height: 32px; background: #333; border-radius: 50%; margin-right: 1rem; display: flex; justify-content: center; align-items: center; color: #ccc; }
+        .device-info { flex: 1; }
+        .device-name { font-weight: bold; font-size: 0.9rem; }
+        .device-meta { font-size: 0.8rem; color: #888; margin-top: 0.2rem; }
+        .revoke-btn { color: #f44336; font-size: 0.8rem; border: 1px solid #f44336; background: transparent; padding: 0.3rem 0.8rem; border-radius: 12px; cursor: pointer; }
+        .export-section { margin-top: 3rem; text-align: center; color: #888; font-size: 0.8rem; }
+        .btn-export { background: transparent; border: 1px solid #444; color: white; padding: 0.8rem 2rem; border-radius: 8px; margin-bottom: 1rem; cursor: pointer; display: inline-flex; align-items: center; }
+        .btn-export:hover { border-color: #2c0fbd; color: #2c0fbd; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Security Settings</h1>
+
+        <div class="section-title">Security Overview</div>
+        <div class="card">
+            <div class="card-row">
+                <div class="row-label">Two-Factor Authentication</div>
+                <div class="toggle-switch active"><div class="knob"></div></div>
+            </div>
+            <div class="card-row">
+                <div class="row-label">Auto-Lock Timeout</div>
+                <div class="row-value">5 Minutes <span style="margin-left: 0.5rem;">›</span></div>
+            </div>
+        </div>
+
+        <div class="section-title">Login Credentials</div>
+        <div class="card">
+            <div class="card-row">
+                <div>
+                    <div class="row-label">Master Password</div>
+                    <div style="font-size: 0.8rem; color: #888; margin-top: 0.2rem;">Last changed 24 days ago</div>
+                </div>
+                <div class="btn-simple">Change</div>
+            </div>
+        </div>
+
+        <div class="section-title">Connected Devices</div>
+        <div class="card">
+            <div class="device-item">
+                <div class="device-icon">📱</div>
+                <div class="device-info">
+                    <div class="device-name">iPhone 15 Pro</div>
+                    <div class="device-meta">London, UK • Active now</div>
+                </div>
+            </div>
+            <div class="device-item">
+                <div class="device-icon">💻</div>
+                <div class="device-info">
+                    <div class="device-name">MacBook Pro 14"</div>
+                    <div class="device-meta">London, UK • 2 hours ago</div>
+                </div>
+                <button class="revoke-btn">Revoke</button>
+            </div>
+            <div class="device-item">
+                <div class="device-icon">🖥️</div>
+                <div class="device-info">
+                    <div class="device-name">Work Station</div>
+                    <div class="device-meta">Manchester, UK • Oct 12, 2023</div>
+                </div>
+                <button class="revoke-btn">Revoke</button>
+            </div>
+        </div>
+
+        <div class="export-section">
+            <button class="btn-export">
+                <span style="margin-right: 0.5rem;">🛡️</span> Export Encrypted Backup
+            </button>
+            <p>Your backup will be encrypted with your master password and saved locally to your device.</p>
+        </div>
+    </div>
+</body>
+</html>
