@@ -96,6 +96,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <h2>Create Account</h2>
         <p class="subtitle">Setup your master password</p>
 
+        <?php
+        // Display all errors in a prominent box at the top
+        if (!empty($email_err) || !empty($password_err) || !empty($confirm_password_err)):
+            ?>
+            <div
+                style="background: rgba(244, 67, 54, 0.1); border-left: 4px solid #f44336; padding: 15px; margin-bottom: 20px; border-radius: 8px;">
+                <strong style="color: #f44336; display: block; margin-bottom: 8px;">⚠️ Registration Error</strong>
+                <?php if (!empty($email_err)): ?>
+                    <p style="color: #d32f2f; margin: 5px 0; font-size: 0.9rem;">• <?php echo $email_err; ?></p>
+                <?php endif; ?>
+                <?php if (!empty($password_err)): ?>
+                    <p style="color: #d32f2f; margin: 5px 0; font-size: 0.9rem;">• <?php echo $password_err; ?></p>
+                <?php endif; ?>
+                <?php if (!empty($confirm_password_err)): ?>
+                    <p style="color: #d32f2f; margin: 5px 0; font-size: 0.9rem;">• <?php echo $confirm_password_err; ?></p>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
+
         <form id="regForm" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post"
             onsubmit="return handleRegister(event)" class="auth-form">
             <div class="form-group">
@@ -104,7 +123,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     required>
                 <?php if (!empty($email_err)): ?>
                     <span class="text-danger"
-                        style="font-size: 0.8rem; margin-top: 5px; display: block;"><?php echo $email_err; ?></span>
+                        style="color: #f44336; font-size: 0.85rem; margin-top: 5px; display: block; font-weight: 500;"><?php echo $email_err; ?></span>
                 <?php endif; ?>
             </div>
 
@@ -113,7 +132,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input type="password" name="password" placeholder="Min. 6 characters" required>
                 <?php if (!empty($password_err)): ?>
                     <span class="text-danger"
-                        style="font-size: 0.8rem; margin-top: 5px; display: block;"><?php echo $password_err; ?></span>
+                        style="color: #f44336; font-size: 0.85rem; margin-top: 5px; display: block; font-weight: 500;"><?php echo $password_err; ?></span>
                 <?php endif; ?>
             </div>
 
@@ -122,7 +141,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input type="password" name="confirm_password" placeholder="Re-enter password" required>
                 <?php if (!empty($confirm_password_err)): ?>
                     <span class="text-danger"
-                        style="font-size: 0.8rem; margin-top: 5px; display: block;"><?php echo $confirm_password_err; ?></span>
+                        style="color: #f44336; font-size: 0.85rem; margin-top: 5px; display: block; font-weight: 500;"><?php echo $confirm_password_err; ?></span>
                 <?php endif; ?>
             </div>
 
@@ -165,14 +184,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Client-side hashing: Never send the actual Master Password
                 const masterKey = CryptoHelper.deriveMasterKey(password, email);
                 console.log('Master Key derived:', masterKey.substring(0, 20) + '...');
-                
+
                 const authHash = CryptoHelper.deriveAuthHash(masterKey);
                 console.log('Auth Hash derived:', authHash.substring(0, 20) + '...');
 
                 // Replace values before submitting
                 form.password.value = authHash;
                 form.confirm_password.value = authHash;
-                
+
                 console.log('Form values replaced with authHash, submitting...');
                 return true;
             } catch (error) {
