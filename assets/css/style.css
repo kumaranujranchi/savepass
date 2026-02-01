@@ -660,6 +660,16 @@ a {
   margin-bottom: 1rem;
 }
 
+/* --- ICON BUTTONS --- */
+.icon-btn {
+  transition: all 0.2s;
+}
+
+.icon-btn:hover {
+  color: var(--accent-primary) !important;
+  transform: scale(1.1);
+}
+
 @media (max-width: 1024px) {
   .sidebar { transform: translateX(-100%); transition: transform 0.3s; }
   .sidebar.mobile-open { transform: translateX(0); }

@@ -50,6 +50,7 @@ require_once "includes/header.php";
                 <tr>
                     <th>Service</th>
                     <th>Username</th>
+                    <th>Password</th>
                     <th>Strength</th>
                     <th class="desktop-only">Created At</th>
                     <th>Actions</th>
@@ -65,6 +66,15 @@ require_once "includes/header.php";
                             </div>
                         </td>
                         <td style="color: var(--text-secondary);"><?php echo htmlspecialchars($item['username']); ?></td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span class="password-display"
+                                    data-encrypted="<?php echo htmlspecialchars($item['password_enc']); ?>"
+                                    style="font-family: monospace; color: var(--text-secondary);">••••••••</span>
+                                <i data-lucide="eye" class="icon-btn" style="width: 16px; height: 16px; cursor: pointer;"
+                                    onclick="togglePasswordInRow(this)" title="Show password"></i>
+                            </div>
+                        </td>
                         <td>
                             <span class="strength-pill strong">
                                 <span style="display: flex; gap: 2px;">
@@ -85,11 +95,11 @@ require_once "includes/header.php";
                         </td>
                         <td>
                             <div style="display: flex; gap: 12px; color: var(--text-dim);">
-                                <i data-lucide="user" class="icon-btn" style="width: 18px; height: 18px;"
-                                    onclick="copyToClipboard('<?php echo htmlspecialchars($item['username']); ?>')"
+                                <i data-lucide="user" class="icon-btn" style="width: 18px; height: 18px; cursor: pointer;"
+                                    onclick="copyWithFeedback('<?php echo htmlspecialchars($item['username']); ?>', this)"
                                     title="Copy Username"></i>
-                                <i data-lucide="key" class="icon-btn" style="width: 18px; height: 18px;"
-                                    onclick="copyEncrypted('<?php echo $item['password_enc']; ?>')"
+                                <i data-lucide="key" class="icon-btn" style="width: 18px; height: 18px; cursor: pointer;"
+                                    onclick="copyEncryptedPassword('<?php echo $item['password_enc']; ?>', this)"
                                     title="Copy Password"></i>
                             </div>
                         </td>
@@ -105,15 +115,65 @@ require_once "includes/header.php";
     style="visibility: hidden; min-width: 250px; margin-left: -125px; background-color: #333; color: #fff; text-align: center; border-radius: 2px; padding: 16px; position: fixed; z-index: 1; left: 50%; bottom: 30px; font-size: 17px;">
     Copied to clipboard!</div>
 
+<script src="assets/js/password-generator.js"></script>
 <script>
-    function copyToClipboard(text) {
+    function togglePasswordInRow(iconElement) {
+        const passwordSpan = iconElement.previousElementSibling;
+        const encrypted = passwordSpan.getAttribute('data-encrypted');
+        const isHidden = passwordSpan.textContent === '••••••••';
+
+        if (isHidden) {
+            // Decrypt and show
+            const key = CryptoHelper.getSessionKey();
+            if (!key) {
+                showToast("Error: Master Key missing.");
+                return;
+            }
+
+            const plaintext = CryptoHelper.decrypt(encrypted, key);
+            if (plaintext === "[Decryption Error]") {
+                showToast("Decryption failed. Check Master Password.");
+                return;
+            }
+
+            passwordSpan.textContent = plaintext;
+            iconElement.setAttribute('data-lucide', 'eye-off');
+            iconElement.setAttribute('title', 'Hide password');
+        } else {
+            // Hide password
+            passwordSpan.textContent = '••••••••';
+            iconElement.setAttribute('data-lucide', 'eye');
+            iconElement.setAttribute('title', 'Show password');
+        }
+
+        lucide.createIcons();
+    }
+
+    function copyWithFeedback(text, buttonElement) {
         if (!text) return;
-        navigator.clipboard.writeText(text).then(function () {
+
+        navigator.clipboard.writeText(text).then(() => {
+            // Change icon temporarily
+            const originalIcon = buttonElement.getAttribute('data-lucide');
+            buttonElement.setAttribute('data-lucide', 'check');
+            buttonElement.style.color = 'var(--green-sec)';
+            lucide.createIcons();
+
             showToast("Copied to clipboard!");
+
+            // Restore icon after 2 seconds
+            setTimeout(() => {
+                buttonElement.setAttribute('data-lucide', originalIcon);
+                buttonElement.style.color = '';
+                lucide.createIcons();
+            }, 2000);
+        }).catch(err => {
+            showToast('Failed to copy');
+            console.error('Copy failed:', err);
         });
     }
 
-    function copyEncrypted(ciphertext) {
+    function copyEncryptedPassword(ciphertext, buttonElement) {
         const key = CryptoHelper.getSessionKey();
         if (!key) {
             showToast("Error: Master Key missing.");
@@ -126,7 +186,7 @@ require_once "includes/header.php";
             return;
         }
 
-        copyToClipboard(plaintext);
+        copyWithFeedback(plaintext, buttonElement);
     }
 
     function showToast(msg) {

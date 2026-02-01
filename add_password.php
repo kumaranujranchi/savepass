@@ -80,14 +80,16 @@ require_once "includes/header.php";
                 <div class="form-group">
                     <label>Password</label>
                     <div style="position: relative;">
-                        <input type="text" name="password" id="password_field" placeholder="Password" required>
-                        <button type="button" onclick="generatePassword()"
+                        <input type="password" name="password" id="password_field" placeholder="Password" required style="padding-right: 80px;">
+                        <i data-lucide="eye" onclick="togglePasswordVisibility('password_field', this)" style="position: absolute; right: 50px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-dim); width: 18px; height: 18px;" title="Toggle visibility"></i>
+                        <button type="button" onclick="openGenerator()"
                             style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: transparent; color: #2c0fbd; border: none; font-weight: bold; cursor: pointer; font-size: 0.8rem;">GENERATE</button>
                     </div>
                     <div
                         style="height: 4px; background: #333; margin-top: 0.5rem; border-radius: 2px; overflow: hidden; display: flex;">
                         <div style="flex: 1; height: 100%; background: #4caf50; margin-right: 2px;"></div>
                         <div style="flex: 1; height: 100%; background: #4caf50; margin-right: 2px;"></div>
+                        <div style="flex: 1; height: 100%; background: #333; margin-right: 2px;"></div>
                         <div style="flex: 1; height: 100%; background: #333; margin-right: 2px;"></div>
                     </div>
                     <div style="font-size: 0.7rem; color: #4caf50; margin-top: 0.2rem; text-align: right;">Strength
@@ -119,17 +121,171 @@ require_once "includes/header.php";
     </div>
 </div>
 
+
+<!-- Password Generator Modal -->
+<div id="generatorModal"
+    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; align-items: center; justify-content: center;">
+    <div
+        style="background: var(--bg-card); border-radius: 16px; padding: 2rem; max-width: 500px; width: 90%; border: 1px solid var(--border-color);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h3 style="margin: 0; font-size: 1.2rem;">Password Generator</h3>
+            <i data-lucide="x" onclick="closeGenerator()"
+                style="cursor: pointer; width: 24px; height: 24px; color: var(--text-dim);"></i>
+        </div>
+
+        <!-- Generated Password Display -->
+        <div
+            style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 12px;">
+            <input type="text" id="generatedPassword" readonly
+                style="flex: 1; background: transparent; border: none; color: var(--text-primary); font-size: 1.1rem; font-family: monospace;"
+                value="GeneratedPass123!">
+            <i data-lucide="copy" onclick="copyWithFeedback(document.getElementById('generatedPassword').value, this)"
+                style="cursor: pointer; width: 20px; height: 20px; color: var(--accent-primary);" title="Copy"></i>
+        </div>
+
+        <!-- Strength Indicator -->
+        <div style="margin-bottom: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">Strength</span>
+                <span id="strengthLabel" style="font-size: 0.85rem; font-weight: 700; color: #00e676;">Strong</span>
+            </div>
+            <div style="display: flex; gap: 4px; height: 6px;">
+                <div id="bar1" style="flex: 1; background: #00e676; border-radius: 3px;"></div>
+                <div id="bar2" style="flex: 1; background: #00e676; border-radius: 3px;"></div>
+                <div id="bar3" style="flex: 1; background: #00e676; border-radius: 3px;"></div>
+                <div id="bar4" style="flex: 1; background: #333; border-radius: 3px;"></div>
+            </div>
+        </div>
+
+        <!-- Length Slider -->
+        <div style="margin-bottom: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <label style="font-size: 0.85rem; color: var(--text-secondary);">Length</label>
+                <span id="lengthValue"
+                    style="font-size: 0.85rem; font-weight: 700; color: var(--text-primary);">16</span>
+            </div>
+            <input type="range" id="lengthSlider" min="8" max="32" value="16"
+                oninput="updateLength(this.value); generateNewPassword();"
+                style="width: 100%; accent-color: var(--accent-primary);">
+        </div>
+
+        <!-- Character Options -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1.5rem;">
+            <label
+                style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px; background: rgba(255,255,255,0.03); border-radius: 8px;">
+                <input type="checkbox" id="optUppercase" checked onchange="generateNewPassword()"
+                    style="accent-color: var(--accent-primary);">
+                <span style="font-size: 0.9rem;">Uppercase (A-Z)</span>
+            </label>
+            <label
+                style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px; background: rgba(255,255,255,0.03); border-radius: 8px;">
+                <input type="checkbox" id="optLowercase" checked onchange="generateNewPassword()"
+                    style="accent-color: var(--accent-primary);">
+                <span style="font-size: 0.9rem;">Lowercase (a-z)</span>
+            </label>
+            <label
+                style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px; background: rgba(255,255,255,0.03); border-radius: 8px;">
+                <input type="checkbox" id="optNumbers" checked onchange="generateNewPassword()"
+                    style="accent-color: var(--accent-primary);">
+                <span style="font-size: 0.9rem;">Numbers (0-9)</span>
+            </label>
+            <label
+                style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px; background: rgba(255,255,255,0.03); border-radius: 8px;">
+                <input type="checkbox" id="optSymbols" checked onchange="generateNewPassword()"
+                    style="accent-color: var(--accent-primary);">
+                <span style="font-size: 0.9rem;">Symbols (!@#$)</span>
+            </label>
+        </div>
+
+        <!-- Actions -->
+        <div style="display: flex; gap: 12px;">
+            <button onclick="generateNewPassword()" class="btn-cancel" style="flex: 1;">
+                <i data-lucide="refresh-cw" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+                Regenerate
+            </button>
+            <button onclick="useGeneratedPassword()" class="btn-primary" style="flex: 1;">Use Password</button>
+        </div>
+    </div>
+</div>
+
+<script src="assets/js/password-generator.js"></script>
 <script>
-    function generatePassword() {
-        const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
-        let password = "";
-        for (let i = 0; i < 16; i++) {
-            password += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        document.getElementById("password_field").value = password;
+    function openGenerator() {
+        document.getElementById('generatorModal').style.display = 'flex';
+        generateNewPassword();
+        lucide.createIcons();
     }
 
+    function closeGenerator() {
+        document.getElementById('generatorModal').style.display = 'none';
+    }
+
+    function updateLength(value) {
+        document.getElementById('lengthValue').textContent = value;
+    }
+
+    function generateNewPassword() {
+        const options = {
+            length: parseInt(document.getElementById('lengthSlider').value),
+            uppercase: document.getElementById('optUppercase').checked,
+            lowercase: document.getElementById('optLowercase').checked,
+            numbers: document.getElementById('optNumbers').checked,
+            symbols: document.getElementById('optSymbols').checked
+        };
+
+        const password = PasswordGenerator.generate(options);
+        document.getElementById('generatedPassword').value = password;
+
+        // Update strength indicator
+        const strength = PasswordGenerator.calculateStrength(password);
+        const info = PasswordGenerator.getStrengthInfo(strength);
+
+        document.getElementById('strengthLabel').textContent = info.label;
+        document.getElementById('strengthLabel').style.color = info.color;
+
+        // Update bars
+        for (let i = 1; i <= 4; i++) {
+            const bar = document.getElementById('bar' + i);
+            bar.style.background = i <= info.bars ? info.color : '#333';
+        }
+    }
+
+    function useGeneratedPassword() {
+        const password = document.getElementById('generatedPassword').value;
+        document.getElementById('password_field').value = password;
+        closeGenerator();
+        updatePasswordStrength(password);
+    }
+
+    function updatePasswordStrength(password) {
+        const strength = PasswordGenerator.calculateStrength(password);
+        const info = PasswordGenerator.getStrengthInfo(strength);
+
+        // Update the strength indicator in the form
+        const bars = document.querySelectorAll('#password_field + div > div > div');
+        bars.forEach((bar, index) => {
+            bar.style.background = index < info.bars ? info.color : '#333';
+        });
+
+        const strengthText = document.querySelector('#password_field + div + div');
+        if (strengthText) {
+            strengthText.textContent = 'Strength: ' + info.label;
+            strengthText.style.color = info.color;
+        }
+    }
+
+    // Update strength on password input
+    document.addEventListener('DOMContentLoaded', function () {
+        const passwordField = document.getElementById('password_field');
+        if (passwordField) {
+            passwordField.addEventListener('input', function () {
+                updatePasswordStrength(this.value);
+            });
+        }
+    });
+
     function handleVaultSubmit(e) {
+
         const form = e.target;
         const key = CryptoHelper.getSessionKey();
 
