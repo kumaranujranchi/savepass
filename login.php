@@ -39,8 +39,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $email = $row["email"];
                         $hashed_password = $row["password_hash"];
 
-                        // Verify password
-                        if (password_verify($password, $hashed_password)) {
+                        // Zero-Knowledge: Both stored and submitted are authHash
+                        // Direct comparison instead of password_verify()
+                        if ($password === $hashed_password) {
                             // Password is correct, start a new session
                             session_start();
 

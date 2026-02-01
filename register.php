@@ -53,7 +53,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->bindParam(":email", $param_email, PDO::PARAM_STR);
             $stmt->bindParam(":password", $param_password, PDO::PARAM_STR);
             $param_email = $email;
-            $param_password = password_hash($password, PASSWORD_DEFAULT); // Hash the password
+            // Zero-Knowledge: Client sends authHash, not plain password
+            // We store it directly without re-hashing
+            $param_password = $password;
             if ($stmt->execute()) {
                 header("location: login.php");
             } else {
