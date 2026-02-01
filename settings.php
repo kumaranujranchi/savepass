@@ -251,6 +251,30 @@ require_once "includes/header.php";
             <option value="0">Never</option>
         </select>
     </div>
+    <!-- Extension API Key -->
+    <div
+        style="padding: 1.5rem; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+        <div style="flex: 1;">
+            <div style="font-weight: 700; margin-bottom: 4px; color: var(--text-primary);">Extension API Key</div>
+            <div style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 1rem;">Use this key to connect the
+                SecureVault Chrome Extension.</div>
+            <div style="position: relative; max-width: 400px;">
+                <input type="password" id="extensionApiKey" value="<?php
+                $key_stmt = $pdo->prepare('SELECT master_password_hash FROM users WHERE id = :id');
+                $key_stmt->execute([':id' => $user_id]);
+                echo $key_stmt->fetchColumn();
+                ?>" readonly
+                    style="background: #1a1c26; border: 1px solid var(--border-color); border-radius: 8px; height: 35px; width: 100%; padding: 0 1rem; color: var(--text-secondary); font-family: monospace;">
+                <div
+                    style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); display: flex; gap: 10px;">
+                    <i data-lucide="eye" class="icon-btn" onclick="toggleApiKeyVisibility(event)"
+                        style="width: 16px; height: 16px; cursor: pointer;"></i>
+                    <i data-lucide="copy" class="icon-btn" onclick="copyApiKey()"
+                        style="width: 16px; height: 16px; cursor: pointer;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <style>
@@ -283,6 +307,26 @@ require_once "includes/header.php";
             SecurityManager.saveConfig(updates);
             showToast('Security settings updated');
         }
+    }
+
+    function toggleApiKeyVisibility(e) {
+        const input = document.getElementById('extensionApiKey');
+        const icon = e.currentTarget;
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.setAttribute('data-lucide', 'eye-off');
+        } else {
+            input.type = 'password';
+            icon.setAttribute('data-lucide', 'eye');
+        }
+        lucide.createIcons();
+    }
+
+    function copyApiKey() {
+        const key = document.getElementById('extensionApiKey').value;
+        navigator.clipboard.writeText(key).then(() => {
+            showToast('API Key copied to clipboard');
+        });
     }
 
     document.addEventListener('DOMContentLoaded', () => {
