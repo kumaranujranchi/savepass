@@ -252,27 +252,31 @@ require_once "includes/header.php";
         </select>
     </div>
     <!-- Extension API Key -->
-    <div
-        style="padding: 1.5rem; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
-        <div style="flex: 1;">
-            <div style="font-weight: 700; margin-bottom: 4px; color: var(--text-primary);">Extension API Key</div>
-            <div style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 1rem;">Use this key to connect the
-                SecureVault Chrome Extension.</div>
-            <div style="position: relative; max-width: 400px;">
+    <div style="padding: 1.5rem; border-top: 1px solid var(--border-color);">
+        <div style="font-weight: 700; margin-bottom: 4px; color: var(--text-primary);">Extension API Key</div>
+        <div style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 1.25rem;">Use this key to connect the
+            SecureVault Chrome Extension.</div>
+
+        <div style="display: flex; gap: 10px; align-items: center; max-width: 500px;">
+            <div style="position: relative; flex: 1;">
                 <input type="password" id="extensionApiKey" value="<?php
                 $key_stmt = $pdo->prepare('SELECT master_password_hash FROM users WHERE id = :id');
                 $key_stmt->execute([':id' => $user_id]);
-                echo $key_stmt->fetchColumn();
+                $extKey = $key_stmt->fetchColumn();
+                echo htmlspecialchars($extKey ? $extKey : 'No key found');
                 ?>" readonly
-                    style="background: #1a1c26; border: 1px solid var(--border-color); border-radius: 8px; height: 35px; width: 100%; padding: 0 1rem; color: var(--text-secondary); font-family: monospace;">
-                <div
-                    style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); display: flex; gap: 10px;">
-                    <i data-lucide="eye" class="icon-btn" onclick="toggleApiKeyVisibility(event)"
-                        style="width: 16px; height: 16px; cursor: pointer;"></i>
-                    <i data-lucide="copy" class="icon-btn" onclick="copyApiKey()"
-                        style="width: 16px; height: 16px; cursor: pointer;"></i>
+                    style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); border-radius: 8px; height: 40px; width: 100%; padding: 0 45px 0 12px; color: var(--text-secondary); font-family: monospace; font-size: 0.9rem;">
+
+                <div style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-dim); cursor: pointer;"
+                    onclick="toggleApiKeyVisibility(event)">
+                    <i data-lucide="eye" style="width: 18px; height: 18px;"></i>
                 </div>
             </div>
+
+            <button type="button" onclick="copyApiKey()" class="btn-cancel"
+                style="padding: 0; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 8px; flex-shrink: 0;">
+                <i data-lucide="copy" style="width: 18px; height: 18px;"></i>
+            </button>
         </div>
     </div>
 </div>
@@ -311,7 +315,9 @@ require_once "includes/header.php";
 
     function toggleApiKeyVisibility(e) {
         const input = document.getElementById('extensionApiKey');
-        const icon = e.currentTarget;
+        const iconWrapper = e.currentTarget;
+        const icon = iconWrapper.querySelector('i') || iconWrapper.querySelector('svg');
+
         if (input.type === 'password') {
             input.type = 'text';
             icon.setAttribute('data-lucide', 'eye-off');
