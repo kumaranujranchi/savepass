@@ -45,11 +45,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             // Password is correct, start a new session
                             session_start();
 
-                            $_SESSION["loggedin"] = true;
-                            $_SESSION["id"] = $id;
-                            $_SESSION["email"] = $email;
+                            // --- NEW BROWSER CHECK ---
+                            $is_trusted = false;
+                            if (isset($_COOKIE['securevault_device'])) {
+                                $device_token = $_COOKIE['securevault_device'];
+                                $stmt_device = $pdo->prepare("SELECT id FROM user_trusted_devices WHERE user_id = :uid AND device_token = :token");
+                                $stmt_device->execute([':uid' => $id, ':token' => $device_token]);
+                                if ($stmt_device->fetch()) {
+                                    $is_trusted = true;
+                                }
+                            }
 
-                            header("location: dashboard.php");
+                            if (!$is_trusted) {
+                                // Generate OTP
+                                $otp = sprintf("%06d", mt_rand(100000, 999999));
+                                $expires = date("Y-m-d H:i:s", strtotime("+10 minutes"));
+
+                                // Send Email
+                                require_once "config/db.php";
+                                require_once "includes/mailer.php";
+                                $ip = $_SERVER['REMOTE_ADDR'];
+                                $browser = $_SERVER['HTTP_USER_AGENT'];
+                                if (Mailer::sendOTP($email, $otp, $ip, $browser)) {
+                                    $_SESSION["pending_otp_userid"] = $id;
+                                    $_SESSION["pending_otp_email"] = $email;
+                                    header("location: verify_otp.php");
+                                    exit;
+                                } else {
+                                    $email_err = "Failed to send verification code. Please contact support.";
+                                }
+                            } else {
+                                // Device is trusted, proceed to login
+                                $_SESSION["loggedin"] = true;
+                                $_SESSION["id"] = $id;
+                                $_SESSION["email"] = $email;
+                                header("location: dashboard.php");
+                                exit;
+                            }
                         } else {
                             $password_err = "The password you entered was not valid.";
                         }
@@ -80,6 +112,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <body class="login-body">
     <div class="auth-card">
+        <div style="margin-bottom: 2rem;">
+            <a href="index.php"
+                style="display: inline-flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); text-decoration: none; transition: 0.3s;"
+                onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--text-dim)'">
+                ← Back to Home
+            </a>
+        </div>
         <div class="auth-logo">SecureVault</div>
         <h2>Welcome Back</h2>
         <p class="subtitle">Unlock your encrypted vault</p>

@@ -22,7 +22,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <!-- Sidebar -->
     <aside class="sidebar desktop-only">
         <div class="brand">
-            <img src="assets/images/logo.png" alt="SecureVault Logo" class="brand-logo">
+            <a href="index.php" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
+                <img src="assets/images/logo.png" alt="SecureVault Logo" class="brand-logo">
+            </a>
         </div>
 
         <nav class="sidebar-nav">

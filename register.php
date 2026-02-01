@@ -92,6 +92,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <body class="login-body">
     <div class="auth-card">
+        <div style="margin-bottom: 2rem;">
+            <a href="index.php"
+                style="display: inline-flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); text-decoration: none; transition: 0.3s;"
+                onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--text-dim)'">
+                ← Back to Home
+            </a>
+        </div>
         <div class="auth-logo">SecureVault</div>
         <h2>Create Account</h2>
         <p class="subtitle">Setup your master password</p>
