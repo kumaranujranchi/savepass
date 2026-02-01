@@ -80,8 +80,11 @@ require_once "includes/header.php";
                 <div class="form-group">
                     <label>Password</label>
                     <div style="position: relative;">
-                        <input type="password" name="password" id="password_field" placeholder="Password" required style="padding-right: 80px;">
-                        <i data-lucide="eye" onclick="togglePasswordVisibility('password_field', this)" style="position: absolute; right: 50px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-dim); width: 18px; height: 18px;" title="Toggle visibility"></i>
+                        <input type="password" name="password" id="password_field" placeholder="Password" required
+                            style="padding-right: 80px;">
+                        <i data-lucide="eye" onclick="togglePasswordVisibility('password_field', this)"
+                            style="position: absolute; right: 50px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-dim); width: 18px; height: 18px;"
+                            title="Toggle visibility"></i>
                         <button type="button" onclick="openGenerator()"
                             style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: transparent; color: #2c0fbd; border: none; font-weight: bold; cursor: pointer; font-size: 0.8rem;">GENERATE</button>
                     </div>
@@ -302,6 +305,48 @@ require_once "includes/header.php";
         }
 
         return true;
+    }
+
+    function copyWithFeedback(text, buttonElement) {
+        if (!text) return;
+
+        navigator.clipboard.writeText(text).then(() => {
+            // Change icon temporarily
+            const originalIcon = buttonElement.getAttribute('data-lucide');
+            buttonElement.setAttribute('data-lucide', 'check');
+            buttonElement.style.color = 'var(--green-sec)';
+            lucide.createIcons();
+
+            showToast("Copied to clipboard!");
+
+            // Trigger automatic clipboard clear
+            if (typeof SecurityManager !== 'undefined') {
+                SecurityManager.scheduleClipboardClear();
+            }
+
+            // Restore icon after 2 seconds
+            setTimeout(() => {
+                buttonElement.setAttribute('data-lucide', originalIcon);
+                buttonElement.style.color = '';
+                lucide.createIcons();
+            }, 2000);
+        }).catch(err => {
+            showToast('Failed to copy');
+            console.error('Copy failed:', err);
+        });
+    }
+
+    function showToast(msg) {
+        let toast = document.getElementById("toast");
+        if (!toast) {
+            toast = document.createElement("div");
+            toast.id = "toast";
+            toast.style = "visibility: hidden; min-width: 250px; margin-left: -125px; background-color: #333; color: #fff; text-align: center; border-radius: 2px; padding: 16px; position: fixed; z-index: 1; left: 50%; bottom: 30px; font-size: 17px;";
+            document.body.appendChild(toast);
+        }
+        toast.innerText = msg;
+        toast.style.visibility = "visible";
+        setTimeout(function () { toast.style.visibility = "hidden"; }, 3000);
     }
 </script>
 

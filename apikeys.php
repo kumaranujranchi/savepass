@@ -146,7 +146,7 @@ require_once "includes/header.php";
                                 <i data-lucide="eye" class="icon-btn" style="width: 18px; height: 18px;"
                                     onclick="toggleReveal(this)" title="Toggle Visibility"></i>
                                 <i data-lucide="copy" class="icon-btn" style="width: 18px; height: 18px;"
-                                    onclick="copyKey('<?php echo $key['api_key_enc']; ?>')" title="Copy Key"></i>
+                                    onclick="copyKey('<?php echo $key['api_key_enc']; ?>', this)" title="Copy Key"></i>
                                 <i data-lucide="trash-2" class="icon-btn" style="width: 18px; height: 18px;"
                                     title="Delete"></i>
                             </div>
@@ -182,19 +182,61 @@ require_once "includes/header.php";
         }
     }
 
-    function copyKey(ciphertext) {
+    function copyWithFeedback(text, buttonElement) {
+        if (!text) return;
+
+        navigator.clipboard.writeText(text).then(() => {
+            // Change icon temporarily
+            const originalIcon = buttonElement.getAttribute('data-lucide');
+            buttonElement.setAttribute('data-lucide', 'check');
+            buttonElement.style.color = 'var(--green-sec)';
+            lucide.createIcons();
+
+            showToast("Copied to clipboard!");
+
+            // Trigger automatic clipboard clear
+            if (typeof SecurityManager !== 'undefined') {
+                SecurityManager.scheduleClipboardClear();
+            }
+
+            // Restore icon after 2 seconds
+            setTimeout(() => {
+                buttonElement.setAttribute('data-lucide', originalIcon);
+                buttonElement.style.color = '';
+                lucide.createIcons();
+            }, 2000);
+        }).catch(err => {
+            showToast('Failed to copy');
+            console.error('Copy failed:', err);
+        });
+    }
+
+    function copyKey(ciphertext, btn) {
         const key = CryptoHelper.getSessionKey();
         if (!key) {
-            alert("Master Key not found.");
+            showToast("Master Key not found.");
             return;
         }
 
         const plaintext = CryptoHelper.decrypt(ciphertext, key);
         if (plaintext !== "[Decryption Error]") {
-            navigator.clipboard.writeText(plaintext).then(() => alert("Copied!"));
+            copyWithFeedback(plaintext, btn);
         } else {
-            alert("Decryption failed.");
+            showToast("Decryption failed.");
         }
+    }
+
+    function showToast(msg) {
+        let toast = document.getElementById("toast");
+        if (!toast) {
+            toast = document.createElement("div");
+            toast.id = "toast";
+            toast.style = "visibility: hidden; min-width: 250px; margin-left: -125px; background-color: #333; color: #fff; text-align: center; border-radius: 2px; padding: 16px; position: fixed; z-index: 1; left: 50%; bottom: 30px; font-size: 17px;";
+            document.body.appendChild(toast);
+        }
+        toast.innerText = msg;
+        toast.style.visibility = "visible";
+        setTimeout(function () { toast.style.visibility = "hidden"; }, 3000);
     }
 
     function handleKeySubmit(e) {

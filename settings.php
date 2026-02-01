@@ -113,7 +113,7 @@ require_once "includes/header.php";
                 <input type="email" name="email" value="<?php echo htmlspecialchars($current_email); ?>" required
                     style="margin-bottom: 0; background: #1a1c26; border: 1px solid var(--border-color); border-radius: 8px; height: 45px; width: 100%; padding: 0 1rem; color: var(--text-primary);">
             </div>
-            
+
             <!-- Member Since (Read-only) -->
             <div>
                 <label
@@ -125,7 +125,8 @@ require_once "includes/header.php";
         </div>
 
         <!-- Account Stats -->
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; padding: 1.5rem; background: rgba(255,255,255,0.02); border-radius: 10px; border: 1px solid var(--border-color);">
+        <div
+            style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; padding: 1.5rem; background: rgba(255,255,255,0.02); border-radius: 10px; border: 1px solid var(--border-color);">
             <div style="text-align: center;">
                 <div style="font-size: 1.8rem; font-weight: 800; color: var(--accent-primary);">
                     <?php
@@ -136,7 +137,8 @@ require_once "includes/header.php";
                     echo $count_stmt->fetch(PDO::FETCH_ASSOC)['count'];
                     ?>
                 </div>
-                <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; margin-top: 4px;">Passwords</div>
+                <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; margin-top: 4px;">
+                    Passwords</div>
             </div>
             <div style="text-align: center;">
                 <div style="font-size: 1.8rem; font-weight: 800; color: var(--green-sec);">
@@ -148,7 +150,8 @@ require_once "includes/header.php";
                     echo $notes_stmt->fetch(PDO::FETCH_ASSOC)['count'];
                     ?>
                 </div>
-                <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; margin-top: 4px;">Notes</div>
+                <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; margin-top: 4px;">
+                    Notes</div>
             </div>
             <div style="text-align: center;">
                 <div style="font-size: 1.8rem; font-weight: 800; color: var(--blue-sec);">
@@ -160,7 +163,8 @@ require_once "includes/header.php";
                     echo $api_stmt->fetch(PDO::FETCH_ASSOC)['count'];
                     ?>
                 </div>
-                <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; margin-top: 4px;">API Keys</div>
+                <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; margin-top: 4px;">API
+                    Keys</div>
             </div>
         </div>
 
@@ -176,6 +180,8 @@ require_once "includes/header.php";
     <div class="section-header">
         <span class="section-title">Security Settings</span>
     </div>
+
+    <!-- Two Factor Placeholder (existing) -->
     <div
         style="padding: 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
         <div>
@@ -195,15 +201,99 @@ require_once "includes/header.php";
             </div>
         </div>
     </div>
-    <div style="padding: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+
+    <!-- Auto-Lock Timeout -->
+    <div
+        style="padding: 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
         <div>
-            <div style="font-weight: 700; margin-bottom: 4px; color: var(--text-primary);">Auto-Lock Timeout</div>
+            <div style="font-weight: 700; margin-bottom: 4px; color: var(--text-primary);">Auto-Lock Vault</div>
             <div style="font-size: 0.8rem; color: var(--text-dim);">Automatically lock your vault after inactivity.
             </div>
         </div>
-        <div style="font-weight: 700; color: var(--accent-secondary); cursor: pointer;">5 Minutes ›</div>
+        <select id="autoLockSettings" onchange="updateSecuritySetting('autoLockTimeout', this.value)"
+            style="background: #1a1c26; border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px; border-radius: 8px; font-weight: 600;">
+            <option value="1">1 Minute</option>
+            <option value="5">5 Minutes</option>
+            <option value="15">15 Minutes</option>
+            <option value="30">30 Minutes</option>
+            <option value="60">1 Hour</option>
+            <option value="0">Never</option>
+        </select>
+    </div>
+
+    <!-- Lock on Close -->
+    <div
+        style="padding: 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <div style="font-weight: 700; margin-bottom: 4px; color: var(--text-primary);">Lock on Browser Close</div>
+            <div style="font-size: 0.8rem; color: var(--text-dim);">Lock vault immediately when browser is closed.</div>
+        </div>
+        <label class="switch" style="position: relative; display: inline-block; width: 44px; height: 24px;">
+            <input type="checkbox" id="lockOnCloseSettings"
+                onchange="updateSecuritySetting('lockOnClose', this.checked)" style="opacity: 0; width: 0; height: 0;">
+            <span class="slider"
+                style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 24px;"></span>
+        </label>
+    </div>
+
+    <!-- Clipboard Clear delay -->
+    <div style="padding: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <div style="font-weight: 700; margin-bottom: 4px; color: var(--text-primary);">Clipboard Protection</div>
+            <div style="font-size: 0.8rem; color: var(--text-dim);">Automatically clear copied data from clipboard.
+            </div>
+        </div>
+        <select id="clipboardSettings" onchange="updateSecuritySetting('clipboardClearDelay', this.value)"
+            style="background: #1a1c26; border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px; border-radius: 8px; font-weight: 600;">
+            <option value="10">10 Seconds</option>
+            <option value="30">30 Seconds</option>
+            <option value="60">1 Minute</option>
+            <option value="0">Never</option>
+        </select>
     </div>
 </div>
+
+<style>
+    .switch input:checked+.slider {
+        background-color: var(--accent-primary);
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+
+    .switch input:checked+.slider:before {
+        transform: translateX(20px);
+    }
+</style>
+
+<script>
+    function updateSecuritySetting(key, value) {
+        if (typeof SecurityManager !== 'undefined') {
+            const updates = {};
+            updates[key] = (typeof value === 'string' && !isNaN(value)) ? parseInt(value) : value;
+            SecurityManager.saveConfig(updates);
+            showToast('Security settings updated');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (typeof SecurityManager !== 'undefined') {
+            const config = SecurityManager.config;
+            document.getElementById('autoLockSettings').value = config.autoLockTimeout;
+            document.getElementById('lockOnCloseSettings').checked = config.lockOnClose;
+            document.getElementById('clipboardSettings').value = config.clipboardClearDelay;
+        }
+    });
+</script>
 
 <div class="section-card" style="margin-bottom: 2rem;">
     <div class="section-header">

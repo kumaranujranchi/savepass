@@ -15,6 +15,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script src="assets/js/crypto-helper.js"></script>
+    <script src="assets/js/security.js"></script>
 </head>
 
 <body>

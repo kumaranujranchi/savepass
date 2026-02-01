@@ -161,6 +161,11 @@ require_once "includes/header.php";
 
             showToast("Copied to clipboard!");
 
+            // Trigger automatic clipboard clear
+            if (typeof SecurityManager !== 'undefined') {
+                SecurityManager.scheduleClipboardClear();
+            }
+
             // Restore icon after 2 seconds
             setTimeout(() => {
                 buttonElement.setAttribute('data-lucide', originalIcon);
