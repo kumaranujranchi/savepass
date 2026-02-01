@@ -5,7 +5,57 @@ require_once "includes/functions.php";
 
 $user_id = $_SESSION["id"];
 $msg = "";
+$error = "";
 
+// Fetch current user data
+$sql = "SELECT email, created_at FROM users WHERE id = :id";
+$stmt = $pdo->prepare($sql);
+$stmt->bindParam(":id", $user_id, PDO::PARAM_INT);
+$stmt->execute();
+$user_data = $stmt->fetch(PDO::FETCH_ASSOC);
+$current_email = $user_data['email'];
+$member_since = $user_data['created_at'];
+
+// Handle profile update
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_profile'])) {
+    $new_email = trim($_POST['email']);
+
+    // Validate email
+    if (empty($new_email)) {
+        $error = "Email cannot be empty.";
+    } elseif (!filter_var($new_email, FILTER_VALIDATE_EMAIL)) {
+        $error = "Invalid email format.";
+    } elseif ($new_email === $current_email) {
+        $error = "New email is the same as current email.";
+    } else {
+        // Check if email already exists
+        $check_sql = "SELECT id FROM users WHERE email = :email AND id != :id";
+        $check_stmt = $pdo->prepare($check_sql);
+        $check_stmt->bindParam(":email", $new_email, PDO::PARAM_STR);
+        $check_stmt->bindParam(":id", $user_id, PDO::PARAM_INT);
+        $check_stmt->execute();
+
+        if ($check_stmt->rowCount() > 0) {
+            $error = "This email is already registered.";
+        } else {
+            // Update email
+            $update_sql = "UPDATE users SET email = :email WHERE id = :id";
+            $update_stmt = $pdo->prepare($update_sql);
+            $update_stmt->bindParam(":email", $new_email, PDO::PARAM_STR);
+            $update_stmt->bindParam(":id", $user_id, PDO::PARAM_INT);
+
+            if ($update_stmt->execute()) {
+                $_SESSION['email'] = $new_email;
+                $current_email = $new_email;
+                $msg = "Profile updated successfully!";
+            } else {
+                $error = "Failed to update profile. Please try again.";
+            }
+        }
+    }
+}
+
+// Handle password change
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['change_password'])) {
     $new_password = $_POST['new_password'];
     $confirm_password = $_POST['confirm_password'];
@@ -32,14 +82,95 @@ require_once "includes/header.php";
 ?>
 
 <h1 class="page-title">Account Settings</h1>
-<p class="page-subtitle">Manage your security preferences and connected devices.</p>
+<p class="page-subtitle">Manage your profile, security preferences and connected devices.</p>
 
 <?php if ($msg): ?>
     <div
-        style="background: rgba(44, 15, 189, 0.1); border: 1px solid var(--accent-primary); color: white; padding: 1rem; border-radius: 12px; margin-bottom: 2rem; font-weight: 600;">
-        <?php echo $msg; ?>
+        style="background: rgba(0, 230, 118, 0.1); border: 1px solid var(--green-sec); color: var(--green-sec); padding: 1rem; border-radius: 12px; margin-bottom: 2rem; font-weight: 600;">
+        ✓ <?php echo $msg; ?>
     </div>
 <?php endif; ?>
+
+<?php if ($error): ?>
+    <div
+        style="background: rgba(244, 67, 54, 0.1); border: 1px solid #f44336; color: #f44336; padding: 1rem; border-radius: 12px; margin-bottom: 2rem; font-weight: 600;">
+        ⚠ <?php echo $error; ?>
+    </div>
+<?php endif; ?>
+
+<!-- Profile Information Section -->
+<div class="section-card" style="margin-bottom: 2rem;">
+    <div class="section-header">
+        <span class="section-title">Profile Information</span>
+    </div>
+    <form method="post" style="padding: 1.5rem;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+            <!-- Email Field -->
+            <div>
+                <label
+                    style="display: block; font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 800; margin-bottom: 8px; letter-spacing: 0.5px;">Email
+                    Address</label>
+                <input type="email" name="email" value="<?php echo htmlspecialchars($current_email); ?>" required
+                    style="margin-bottom: 0; background: #1a1c26; border: 1px solid var(--border-color); border-radius: 8px; height: 45px; width: 100%; padding: 0 1rem; color: var(--text-primary);">
+            </div>
+            
+            <!-- Member Since (Read-only) -->
+            <div>
+                <label
+                    style="display: block; font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 800; margin-bottom: 8px; letter-spacing: 0.5px;">Member
+                    Since</label>
+                <input type="text" value="<?php echo date('F j, Y', strtotime($member_since)); ?>" readonly
+                    style="margin-bottom: 0; background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 8px; height: 45px; width: 100%; padding: 0 1rem; color: var(--text-secondary); cursor: not-allowed;">
+            </div>
+        </div>
+
+        <!-- Account Stats -->
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; padding: 1.5rem; background: rgba(255,255,255,0.02); border-radius: 10px; border: 1px solid var(--border-color);">
+            <div style="text-align: center;">
+                <div style="font-size: 1.8rem; font-weight: 800; color: var(--accent-primary);">
+                    <?php
+                    $count_sql = "SELECT COUNT(*) as count FROM vault_items WHERE user_id = :id";
+                    $count_stmt = $pdo->prepare($count_sql);
+                    $count_stmt->bindParam(":id", $user_id, PDO::PARAM_INT);
+                    $count_stmt->execute();
+                    echo $count_stmt->fetch(PDO::FETCH_ASSOC)['count'];
+                    ?>
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; margin-top: 4px;">Passwords</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 1.8rem; font-weight: 800; color: var(--green-sec);">
+                    <?php
+                    $notes_sql = "SELECT COUNT(*) as count FROM secure_notes WHERE user_id = :id";
+                    $notes_stmt = $pdo->prepare($notes_sql);
+                    $notes_stmt->bindParam(":id", $user_id, PDO::PARAM_INT);
+                    $notes_stmt->execute();
+                    echo $notes_stmt->fetch(PDO::FETCH_ASSOC)['count'];
+                    ?>
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; margin-top: 4px;">Notes</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 1.8rem; font-weight: 800; color: var(--blue-sec);">
+                    <?php
+                    $api_sql = "SELECT COUNT(*) as count FROM api_keys WHERE user_id = :id";
+                    $api_stmt = $pdo->prepare($api_sql);
+                    $api_stmt->bindParam(":id", $user_id, PDO::PARAM_INT);
+                    $api_stmt->execute();
+                    echo $api_stmt->fetch(PDO::FETCH_ASSOC)['count'];
+                    ?>
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; margin-top: 4px;">API Keys</div>
+            </div>
+        </div>
+
+        <button type="submit" name="update_profile" class="btn btn-primary"
+            style="width: auto; padding: 0.8rem 2.5rem; background: var(--accent-primary);">
+            <i data-lucide="save" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+            Save Changes
+        </button>
+    </form>
+</div>
 
 <div class="section-card" style="margin-bottom: 2rem;">
     <div class="section-header">

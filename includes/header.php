@@ -68,13 +68,13 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     style="width: 20px; height: 20px; cursor: pointer; color: var(--text-secondary);"></i>
                 <i data-lucide="shield-check"
                     style="width: 20px; height: 20px; cursor: pointer; color: var(--text-secondary);"></i>
-                <div class="profile-card">
+                <a href="settings.php" class="profile-card" style="text-decoration: none; cursor: pointer;">
                     <div class="profile-info">
                         <span class="profile-name"><?php echo htmlspecialchars($_SESSION['email'] ?? 'User'); ?></span>
                         <span class="security-badge">Security Grade: A+</span>
                     </div>
                     <div class="avatar"></div>
-                </div>
+                </a>
             </div>
         </header>
 
