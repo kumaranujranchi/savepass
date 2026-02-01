@@ -31,9 +31,7 @@ if (empty($api_key)) {
 }
 
 // Validate API Key and get User ID
-// For now, we'll look for the master_password_hash as a simple "API Key" or 
-// we can use a dedicated column. Let's check the users table.
-$stmt = $pdo->prepare("SELECT id FROM users WHERE master_password_hash = :key LIMIT 1");
+$stmt = $pdo->prepare("SELECT id FROM users WHERE password_hash = :key LIMIT 1");
 $stmt->execute([':key' => $api_key]);
 $user = $stmt->fetch();
 
@@ -54,12 +52,12 @@ if (empty($service_name) || empty($password_enc)) {
 }
 
 try {
-    $sql = "INSERT INTO vault_items (user_id, service_name, username, password_enc, category) 
-            VALUES (:user_id, :service_name, :username, :password_enc, :category)";
+    $sql = "INSERT INTO vault_items (user_id, app_name, username, password_enc, category) 
+            VALUES (:user_id, :app_name, :username, :password_enc, :category)";
     $stmt = $pdo->prepare($sql);
     $result = $stmt->execute([
         ':user_id' => $user_id,
-        ':service_name' => $service_name,
+        ':app_name' => $service_name,
         ':username' => $username,
         ':password_enc' => $password_enc,
         ':category' => $category

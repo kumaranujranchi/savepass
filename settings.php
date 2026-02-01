@@ -260,10 +260,14 @@ require_once "includes/header.php";
         <div style="display: flex; gap: 10px; align-items: center; max-width: 500px;">
             <div style="position: relative; flex: 1;">
                 <input type="password" id="extensionApiKey" value="<?php
-                $key_stmt = $pdo->prepare('SELECT master_password_hash FROM users WHERE id = :id');
-                $key_stmt->execute([':id' => $user_id]);
-                $extKey = $key_stmt->fetchColumn();
-                echo htmlspecialchars($extKey ? $extKey : 'No key found');
+                try {
+                    $key_stmt = $pdo->prepare('SELECT password_hash FROM users WHERE id = :id');
+                    $key_stmt->execute([':id' => $user_id]);
+                    $extKey = $key_stmt->fetchColumn();
+                    echo htmlspecialchars($extKey ? $extKey : '');
+                } catch (Exception $e) {
+                    echo 'Error fetching key';
+                }
                 ?>" readonly
                     style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); border-radius: 8px; height: 40px; width: 100%; padding: 0 45px 0 12px; color: var(--text-secondary); font-family: monospace; font-size: 0.9rem;">
 
