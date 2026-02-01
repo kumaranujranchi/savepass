@@ -257,10 +257,11 @@ require_once "includes/header.php";
         <div
             style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 15px;">
             <div style="font-size: 0.8rem; color: var(--text-dim); flex: 1; min-width: 250px;">Use this key to connect
-                the SecureVault Chrome Extension. <br><span style="color: var(--accent-primary);">No setup manual
-                    required? Download the zip below.</span></div>
+                the SecureVault Chrome Extension. <br><span
+                    style="color: #fff; font-weight: 600; margin-top: 4px; display: inline-block;">Ready to install?
+                    Download the zip below.</span></div>
             <a href="assets/downloads/extension.zip" class="btn-pro"
-                style="text-decoration: none; display: flex; align-items: center; gap: 8px; font-size: 0.75rem; padding: 8px 16px; background: rgba(108, 92, 231, 0.1); border: 1px solid var(--accent-primary); color: var(--accent-primary); border-radius: 8px; font-weight: 700;">
+                style="text-decoration: none; display: flex; align-items: center; gap: 8px; font-size: 0.75rem; padding: 10px 20px; background: var(--accent-primary); color: white; border: none; border-radius: 8px; font-weight: 700; box-shadow: 0 4px 12px rgba(108, 92, 231, 0.2);">
                 <i data-lucide="download" style="width: 14px; height: 14px;"></i>
                 Download Extension (.zip)
             </a>
