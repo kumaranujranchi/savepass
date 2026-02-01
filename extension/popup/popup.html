@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SecureVault Settings</title>
+    <style>
+        body {
+            width: 300px;
+            padding: 1rem;
+            background: #11131a;
+            color: #fff;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 1rem;
+        }
+        .logo {
+            font-size: 1.2rem;
+            background: rgba(44, 15, 189, 0.2);
+            padding: 5px 10px;
+            border-radius: 8px;
+        }
+        .title { font-weight: 800; font-size: 1rem; }
+        .form-group { margin-bottom: 1rem; }
+        label {
+            display: block;
+            font-size: 0.7rem;
+            color: #9499ad;
+            text-transform: uppercase;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+        input {
+            width: 100%;
+            background: #1a1c26;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            height: 35px;
+            padding: 0 10px;
+            color: #fff;
+            box-sizing: border-box;
+        }
+        .btn {
+            width: 100%;
+            background: #2c0fbd;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .info {
+            font-size: 0.7rem;
+            color: #9499ad;
+            margin-top: 10px;
+            line-height: 1.4;
+        }
+        #status {
+            font-size: 0.7rem;
+            text-align: center;
+            margin-top: 10px;
+            color: #00e676;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">🔒</div>
+        <div class="title">SecureVault</div>
+    </div>
+    
+    <div class="form-group">
+        <label>Server URL</label>
+        <input type="text" id="apiUrl" placeholder="http://localhost">
+    </div>
+    
+    <div class="form-group">
+        <label>Extension API Key</label>
+        <input type="password" id="apiKey" placeholder="Paste your key here">
+    </div>
+    
+    <button id="saveBtn" class="btn">Save Configuration</button>
+    <div id="status">Settings saved!</div>
+
+    <div class="info">
+        Get your API key from the <b>Settings</b> page in your SecureVault web dashboard.
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>
