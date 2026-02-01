@@ -6,6 +6,9 @@ $email = $password = $confirm_password = "";
 $email_err = $password_err = $confirm_password_err = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    error_log("Registration attempt started");
+    error_log("POST data: " . print_r($_POST, true));
+
     // Validate email
     if (empty(trim($_POST["email"]))) {
         $email_err = "Please enter an email.";
@@ -57,9 +60,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // We store it directly without re-hashing
             $param_password = $password;
             if ($stmt->execute()) {
+                error_log("User registered successfully: " . $email);
                 header("location: login.php");
+                exit();
             } else {
-                echo "Something went wrong. Please try again later.";
+                $error_info = $stmt->errorInfo();
+                error_log("Registration failed: " . print_r($error_info, true));
+                echo "<div style='color: red; padding: 20px; background: rgba(255,0,0,0.1); border-radius: 8px; margin: 20px;'>";
+                echo "<strong>Database Error:</strong><br>";
+                echo "SQLSTATE: " . $error_info[0] . "<br>";
+                echo "Error Code: " . $error_info[1] . "<br>";
+                echo "Message: " . $error_info[2];
+                echo "</div>";
             }
             unset($stmt);
         }
@@ -129,28 +141,45 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <script>
         function handleRegister(e) {
+            console.log('Registration form submitted');
             const form = e.target;
             const email = form.email.value;
             const password = form.password.value;
             const confirmPassword = form.confirm_password.value;
 
+            console.log('Email:', email);
+            console.log('Password length:', password.length);
+
             if (password !== confirmPassword) {
+                console.warn('Passwords do not match');
                 return true; // Let PHP handle validation error display for consistency
             }
 
             if (password.length < 6) {
+                console.warn('Password too short');
                 return true;
             }
 
-            // Client-side hashing: Never send the actual Master Password
-            const masterKey = CryptoHelper.deriveMasterKey(password, email);
-            const authHash = CryptoHelper.deriveAuthHash(masterKey);
+            try {
+                console.log('Starting key derivation...');
+                // Client-side hashing: Never send the actual Master Password
+                const masterKey = CryptoHelper.deriveMasterKey(password, email);
+                console.log('Master Key derived:', masterKey.substring(0, 20) + '...');
+                
+                const authHash = CryptoHelper.deriveAuthHash(masterKey);
+                console.log('Auth Hash derived:', authHash.substring(0, 20) + '...');
 
-            // Replace values before submitting
-            form.password.value = authHash;
-            form.confirm_password.value = authHash;
-
-            return true;
+                // Replace values before submitting
+                form.password.value = authHash;
+                form.confirm_password.value = authHash;
+                
+                console.log('Form values replaced with authHash, submitting...');
+                return true;
+            } catch (error) {
+                console.error('Crypto error:', error);
+                alert('Encryption error: ' + error.message);
+                return false;
+            }
         }
     </script>
 </body>
