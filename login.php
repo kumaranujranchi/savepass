@@ -42,12 +42,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         // Zero-Knowledge: Both stored and submitted are authHash
                         // Direct comparison instead of password_verify()
                         if ($password === $hashed_password) {
-                            // Password is correct, start a new session
-                            session_start();
-
                             // --- NEW BROWSER CHECK ---
                             $is_trusted = false;
-                            if (isset($_COOKIE['securevault_device'])) {
+
+                            if (!empty($_COOKIE['securevault_device'])) {
                                 $device_token = $_COOKIE['securevault_device'];
                                 $stmt_device = $pdo->prepare("SELECT id FROM user_trusted_devices WHERE user_id = :uid AND device_token = :token");
                                 $stmt_device->execute([':uid' => $id, ':token' => $device_token]);
@@ -61,11 +59,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 $otp = sprintf("%06d", mt_rand(100000, 999999));
                                 $expires = date("Y-m-d H:i:s", strtotime("+10 minutes"));
 
+                                // RESTORED: Save OTP to DB
+                                $stmt_otp = $pdo->prepare("INSERT INTO user_otps (user_id, otp_code, expires_at) VALUES (:uid, :otp, :expires)");
+                                $stmt_otp->execute([':uid' => $id, ':otp' => $otp, ':expires' => $expires]);
+
                                 // Send Email
                                 require_once "config/db.php";
                                 require_once "includes/mailer.php";
                                 $ip = $_SERVER['REMOTE_ADDR'];
                                 $browser = $_SERVER['HTTP_USER_AGENT'];
+
                                 if (Mailer::sendOTP($email, $otp, $ip, $browser)) {
                                     $_SESSION["pending_otp_userid"] = $id;
                                     $_SESSION["pending_otp_email"] = $email;
@@ -73,6 +76,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     exit;
                                 } else {
                                     $email_err = "Failed to send verification code. Please contact support.";
+                                    error_log("OTP mail failed for $email. IP: $ip");
                                 }
                             } else {
                                 // Device is trusted, proceed to login

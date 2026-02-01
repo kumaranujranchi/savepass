@@ -6,10 +6,10 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 class Mailer
 {
-    private static $host = 'smtp.hostinger.com';
-    private static $port = 465;
-    private static $username = DB_USERNAME; // Pull from db.php (which is gitignored)
-    private static $password = DB_PASSWORD; // Pull from db.php
+    private static $host = SMTP_HOST;
+    private static $port = SMTP_PORT;
+    private static $username = SMTP_USER;
+    private static $password = SMTP_PASS;
 
     public static function sendOTP($toEmail, $otp, $ip = 'Unknown', $browser = 'Unknown')
     {
