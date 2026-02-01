@@ -133,6 +133,50 @@ const SecurityManager = {
                 console.warn('Could not clear clipboard:', err);
             });
         }
+    },
+
+    /**
+     * Check if a plaintext string (e.g. API key) has been publicly exposed.
+     * Uses Have I Been Pwned API with k-anonymity (privacy-preserving).
+     * @param {string} plaintext - The secret to check.
+     * @returns {Promise<number>} - The number of times it has been seen in breaches (0 if safe).
+     */
+    checkExposed: async function(plaintext) {
+        if (!plaintext) return 0;
+        
+        try {
+            // 1. Calculate SHA-1 hash (hex string)
+            // Note: CryptoJS must be included in the page
+            const hash = CryptoJS.SHA1(plaintext).toString().toUpperCase();
+            
+            // 2. Separate prefix (first 5 chars) and suffix (remaining 35 chars)
+            const prefix = hash.slice(0, 5);
+            const suffix = hash.slice(5);
+            
+            // 3. Fetch matches from HIBP API (only sending the prefix)
+            const response = await fetch(`https://api.pwnedpasswords.com/range/${prefix}`);
+            if (!response.ok) {
+                console.error('Leak check API failed', response.status);
+                return 0;
+            }
+            
+            const resultsText = await response.text();
+            
+            // 4. Local searching: Check if suffix is in the returned list
+            // API returns lines in format: SUFFIX:COUNT
+            const lines = resultsText.split('\n');
+            for (let line of lines) {
+                const [resultSuffix, count] = line.trim().split(':');
+                if (resultSuffix === suffix) {
+                    return parseInt(count);
+                }
+            }
+            
+            return 0; // Not found in breaches
+        } catch (err) {
+            console.error('Error in leak check:', err);
+            return 0;
+        }
     }
 };
 

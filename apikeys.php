@@ -35,10 +35,18 @@ require_once "includes/header.php";
 
 <!-- Premium Add Form -->
 <div class="section-card" style="margin-bottom: 2.5rem; padding: 2rem;">
-    <div class="section-header" style="margin-bottom: 2rem; padding: 0;">
-        <span class="section-title">Add New API Key</span>
-        <p style="color: var(--text-dim); font-size: 0.85rem; margin-top: 4px;">Store your keys securely with AES-256
-            encryption.</p>
+    <div class="section-header"
+        style="margin-bottom: 2rem; padding: 0; display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+            <span class="section-title">Add New API Key</span>
+            <p style="color: var(--text-dim); font-size: 0.85rem; margin-top: 4px;">Store your keys securely with
+                AES-256 encryption.</p>
+        </div>
+        <button type="button" onclick="scanAllKeys()" class="btn btn-pro"
+            style="padding: 0.5rem 1rem; font-size: 0.8rem; background: rgba(255, 69, 58, 0.1); color: #ff453a; border: 1px solid #ff453a;">
+            <i data-lucide="shield-alert" style="width: 14px; height: 14px; margin-right: 6px;"></i>
+            Scan for Leaks
+        </button>
     </div>
 
     <form id="keyForm" method="post" action="" onsubmit="return handleKeySubmit(event)">
@@ -139,12 +147,19 @@ require_once "includes/header.php";
                                     style="color: var(--text-dim); letter-spacing: 2px;">••••••••••••••••</span>
                                 <span class="revealed" data-encrypted="<?php echo $key['api_key_enc']; ?>"
                                     style="display: none; color: var(--text-secondary); font-family: monospace;">••••••••</span>
+                                <div class="leak-status" style="display: none;">
+                                    <span class="strength-pill"
+                                        style="background: rgba(255, 69, 58, 0.15); color: #ff453a; border: none; font-weight: 800; font-size: 0.6rem; padding: 2px 6px;">⚠️
+                                        EXPOSED</span>
+                                </div>
                             </div>
                         </td>
                         <td>
                             <div style="display: flex; gap: 12px; color: var(--text-dim);">
                                 <i data-lucide="eye" class="icon-btn" style="width: 18px; height: 18px;"
                                     onclick="toggleReveal(this)" title="Toggle Visibility"></i>
+                                <i data-lucide="shield-check" class="icon-btn scan-btn" style="width: 18px; height: 18px;"
+                                    onclick="scanIndividualKey(this)" title="Scan for Exposure"></i>
                                 <i data-lucide="copy" class="icon-btn" style="width: 18px; height: 18px;"
                                     onclick="copyKey('<?php echo $key['api_key_enc']; ?>', this)" title="Copy Key"></i>
                                 <i data-lucide="trash-2" class="icon-btn" style="width: 18px; height: 18px;"
@@ -237,6 +252,54 @@ require_once "includes/header.php";
         toast.innerText = msg;
         toast.style.visibility = "visible";
         setTimeout(function () { toast.style.visibility = "hidden"; }, 3000);
+    }
+
+    async function scanIndividualKey(btn) {
+        const row = btn.closest('tr');
+        const encrypted = row.querySelector('.revealed').getAttribute('data-encrypted');
+        const leakStatusDiv = row.querySelector('.leak-status');
+
+        btn.classList.add('rotating'); // Add a CSS class for animation if needed
+        btn.style.color = 'var(--accent-primary)';
+
+        const key = CryptoHelper.getSessionKey();
+        if (!key) {
+            showToast("Master Key not found. Please re-login.");
+            btn.classList.remove('rotating');
+            return;
+        }
+
+        const plaintext = CryptoHelper.decrypt(encrypted, key);
+        if (plaintext === "[Decryption Error]") {
+            showToast("Decryption failed.");
+            btn.classList.remove('rotating');
+            return;
+        }
+
+        const leakCount = await SecurityManager.checkExposed(plaintext);
+
+        btn.classList.remove('rotating');
+
+        if (leakCount > 0) {
+            leakStatusDiv.style.display = 'block';
+            showToast(`⚠️ Warning: This key has been found in ${leakCount} breaches!`);
+            btn.style.color = '#ff453a';
+            btn.setAttribute('data-lucide', 'shield-alert');
+        } else {
+            leakStatusDiv.style.display = 'none';
+            showToast("✅ Solid! This key is not found in known breaches.");
+            btn.style.color = '#00e676';
+            btn.setAttribute('data-lucide', 'shield-check');
+        }
+        lucide.createIcons();
+    }
+
+    async function scanAllKeys() {
+        showToast("🔍 Scanning all keys for exposure...");
+        const scanButtons = document.querySelectorAll('.scan-btn');
+        for (let btn of scanButtons) {
+            await scanIndividualKey(btn);
+        }
     }
 
     function handleKeySubmit(e) {
