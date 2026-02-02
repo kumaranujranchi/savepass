@@ -228,6 +228,8 @@ $isLoggedIn = isset($_SESSION["id"]);
         </a>
         <div class="nav-links">
             <a href="index.php">Home</a>
+            <a href="index.php#features">Features</a>
+            <a href="index.php#security">Security</a>
             <a href="pricing.php" style="color: white;">Pricing</a>
             <a href="news.php">News</a>
             <?php if ($isLoggedIn): ?>
