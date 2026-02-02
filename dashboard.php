@@ -120,7 +120,10 @@ require_once "includes/header.php";
                         <tr>
                             <td>
                                 <div class="service-cell">
-                                    <div class="service-icon"><?php echo strtoupper(substr($item['app_name'], 0, 1)); ?></div>
+                                    <div class="service-icon">
+                                        <i data-lucide="<?php echo getServiceIcon($item['app_name']); ?>"
+                                            style="width: 24px; height: 24px;"></i>
+                                    </div>
                                     <?php echo htmlspecialchars($item['app_name']); ?>
                                 </div>
                             </td>

@@ -41,4 +41,53 @@ function formatDate($date)
 {
     return date("M d, Y", strtotime($date));
 }
+
+// Get icon based on service name
+function getServiceIcon($appName)
+{
+    $name = strtolower($appName);
+
+    // Exact matches or strict contains
+    if (strpos($name, 'facebook') !== false)
+        return 'facebook';
+    if (strpos($name, 'instagram') !== false)
+        return 'instagram';
+    if (strpos($name, 'twitter') !== false || strpos($name, 'x.com') !== false)
+        return 'twitter';
+    if (strpos($name, 'linkedin') !== false)
+        return 'linkedin';
+    if (strpos($name, 'github') !== false)
+        return 'github';
+    if (strpos($name, 'google') !== false || strpos($name, 'gmail') !== false)
+        return 'chrome';
+    if (strpos($name, 'apple') !== false || strpos($name, 'icloud') !== false)
+        return 'apple';
+    if (strpos($name, 'amazon') !== false)
+        return 'shopping-cart';
+    if (strpos($name, 'netflix') !== false)
+        return 'tv';
+    if (strpos($name, 'spotify') !== false)
+        return 'music';
+    if (strpos($name, 'slack') !== false)
+        return 'slack';
+    if (strpos($name, 'discord') !== false)
+        return 'gamepad-2';
+    if (strpos($name, 'youtube') !== false)
+        return 'youtube';
+    if (strpos($name, 'twitch') !== false)
+        return 'twitch';
+    if (strpos($name, 'figma') !== false)
+        return 'figma';
+    if (strpos($name, 'dribbble') !== false)
+        return 'dribbble';
+    if (strpos($name, 'dropbox') !== false)
+        return 'box';
+    if (strpos($name, 'bank') !== false || strpos($name, 'pay') !== false)
+        return 'credit-card';
+    if (strpos($name, 'mail') !== false || strpos($name, 'outlook') !== false)
+        return 'mail';
+
+    // Default fallback
+    return 'globe';
+}
 ?>
