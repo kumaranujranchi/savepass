@@ -225,8 +225,7 @@ $isLoggedIn = isset($_SESSION["id"]);
 
     <nav>
         <a href="index.php" class="logo">
-            <i data-lucide="shield-check" style="width: 28px; height: 28px; color: #2c0fbd;"></i>
-            SecureVault
+            <img src="assets/images/logo.png" alt="SecureVault" style="height: 32px;">
         </a>
         <div class="nav-links">
             <a href="index.php">Home</a>
