@@ -356,13 +356,15 @@ $isLoggedIn = isset($_SESSION["id"]);
     <div class="ambient-bg"></div>
 
     <nav>
-        <div class="logo">
+        <a href="index.php" class="logo">
             <i data-lucide="shield-check" style="width: 28px; height: 28px; color: #2c0fbd;"></i>
             SecureVault
-        </div>
+        </a>
         <div class="nav-links">
             <a href="#features">Features</a>
             <a href="#security">Security</a>
+            <a href="pricing.php">Pricing</a>
+            <a href="news.php">News</a>
             <?php if ($isLoggedIn): ?>
                 <a href="dashboard.php" class="btn-nav">Dashboard</a>
             <?php else: ?>
@@ -486,8 +488,10 @@ $isLoggedIn = isset($_SESSION["id"]);
             SecureVault
         </div>
         <ul class="footer-links">
-            <li><a href="#">Privacy Policy</a></li>
-            <li><a href="#">Terms of Service</a></li>
+            <li><a href="privacy.php">Privacy Policy</a></li>
+            <li><a href="terms.php">Terms of Service</a></li>
+            <li><a href="news.php">News</a></li>
+            <li><a href="pricing.php">Pricing</a></li>
             <li><a href="login.php">Login</a></li>
             <li><a href="register.php">Register</a></li>
         </ul>
