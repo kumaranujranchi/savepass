@@ -104,6 +104,9 @@ require_once "includes/header.php";
                                 <i data-lucide="key" class="icon-btn" style="width: 18px; height: 18px; cursor: pointer;"
                                     onclick="copyEncryptedPassword('<?php echo $item['password_enc']; ?>', this)"
                                     title="Copy Password"></i>
+                                <i data-lucide="trash-2" class="icon-btn"
+                                    style="width: 18px; height: 18px; cursor: pointer; color: #ff4d4d;"
+                                    onclick="confirmDelete(<?php echo $item['id']; ?>)" title="Delete Item"></i>
                             </div>
                         </td>
                     </tr>
@@ -242,6 +245,12 @@ require_once "includes/header.php";
             } else {
                 cards[i].style.display = "none";
             }
+        }
+    }
+
+    function confirmDelete(id) {
+        if (confirm("Are you sure you want to delete this password? This action cannot be undone.")) {
+            window.location.href = "delete_item.php?id=" + id;
         }
     }
 </script>
