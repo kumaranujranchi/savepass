@@ -25,7 +25,7 @@ $isLoggedIn = isset($_SESSION["id"]);
 
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="assets/css/style.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="assets/css/landing-responsive.css?v=<?php echo time(); ?>">
 
     <style>
         :root {

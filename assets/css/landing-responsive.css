@@ -1,0 +1,129 @@
+/* Landing Page Mobile Responsiveness */
+/* Isolated from main dashboard style.css to prevent layout conflicts */
+
+/* Mobile Menu Button */
+.mobile-menu-btn {
+    display: none;
+    cursor: pointer;
+    z-index: 200;
+    color: white;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Tablet & Mobile Breakpoint */
+@media (max-width: 1024px) {
+    nav {
+        padding: 1rem 5%;
+    }
+
+    .mobile-menu-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Fullscreen Mobile Menu */
+    .nav-links {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background: radial-gradient(circle at top right, #1a0b5c 0%, #0a0b10 100%);
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem;
+        gap: 2rem;
+        z-index: 150;
+        transform: translateY(-100%);
+        opacity: 0;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        visibility: hidden;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+    }
+
+    .nav-links.mobile-active {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .nav-links a {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: white;
+    }
+    
+    .nav-links a:hover {
+        color: #2c0fbd; /* var(--accent-primary) */
+    }
+
+    .btn-nav {
+        background: #2c0fbd; /* var(--accent-primary) */
+        width: 100%;
+        text-align: center;
+        max-width: 200px;
+    }
+
+    /* Hero Section Mobile */
+    header {
+        padding-top: 6rem;
+        padding-bottom: 2rem;
+    }
+
+    h1 {
+        font-size: 2rem !important;
+        line-height: 1.2;
+    }
+
+    .hero-desc {
+        font-size: 1rem !important;
+        margin-bottom: 2rem;
+    }
+
+    .cta-group {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .btn-large {
+        width: 100%;
+        justify-content: center;
+        max-width: 300px;
+        font-size: 1rem;
+        padding: 1rem;
+    }
+
+    /* Features Grid Mobile */
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .section-padding {
+        padding: 4rem 5%;
+    }
+
+    /* Footer Mobile */
+    .footer-links {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .security-banner {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 3rem;
+    }
+    
+    .security-item {
+        flex-direction: column;
+        text-align: center;
+    }
+}
