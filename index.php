@@ -12,6 +12,8 @@ $isLoggedIn = isset($_SESSION["id"]);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SecureVault | Your Premium Digital Vault</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/images/favicon.png">
     <!-- SEO Meta Tags -->
     <meta name="description"
         content="SecureVault is a premium, zero-knowledge password and API key manager. Secure your digital life with AES-256 encryption and advanced leak detection.">
