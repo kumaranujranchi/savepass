@@ -17,6 +17,7 @@ $isLoggedIn = isset($_SESSION["id"]);
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="assets/css/style.css?v=<?php echo time(); ?>">
 
     <style>
         :root {
