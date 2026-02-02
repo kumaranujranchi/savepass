@@ -360,7 +360,7 @@ $isLoggedIn = isset($_SESSION["id"]);
 
     <nav>
         <a href="index.php" class="logo">
-            <img src="assets/images/logo.png" alt="SecureVault" style="height: 32px;">
+            <img src="assets/images/logo.png" alt="SecureVault" style="height: 40px;">
         </a>
         <div class="nav-links">
             <a href="#features">Features</a>
