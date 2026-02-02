@@ -373,6 +373,9 @@ $isLoggedIn = isset($_SESSION["id"]);
                 <a href="register.php" class="btn-nav">Get Started</a>
             <?php endif; ?>
         </div>
+        <div class="mobile-menu-btn" onclick="toggleMobileMenu()">
+            <i data-lucide="menu"></i>
+        </div>
     </nav>
 
     <header>
@@ -501,6 +504,21 @@ $isLoggedIn = isset($_SESSION["id"]);
 
     <script>
         lucide.createIcons();
+
+        function toggleMobileMenu() {
+            const navLinks = document.querySelector('.nav-links');
+            const menuBtnIcon = document.querySelector('.mobile-menu-btn i');
+
+            navLinks.classList.toggle('mobile-active');
+
+            // Toggle icon between menu and x
+            if (navLinks.classList.contains('mobile-active')) {
+                menuBtnIcon.setAttribute('data-lucide', 'x');
+            } else {
+                menuBtnIcon.setAttribute('data-lucide', 'menu');
+            }
+            lucide.createIcons();
+        }
     </script>
 </body>
 
